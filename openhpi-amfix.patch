@@ -1,17 +1,9 @@
---- openhpi-0.7.0/openhpid/Makefile.am.orig	2004-05-04 01:13:06.000000000 +0200
-+++ openhpi-0.7.0/openhpid/Makefile.am	2004-05-20 01:02:31.862036360 +0200
-@@ -32,7 +32,6 @@
- 	openhpid.cpp
- 
- openhpid_LDADD          = $(top_builddir)/marshal/libmarshal.la $(top_builddir)/src/libopenhpi.la $(top_builddir)/utils/libopenhpiutils.la
--#openhpid_LDFLAGS        = -static
- 
- # client library
- # please do not use any external libraries
-@@ -54,7 +53,6 @@
+--- openhpi-0.9.0/openhpid/Makefile.am.orig	2004-05-10 18:19:53.000000000 +0200
++++ openhpi-0.9.0/openhpid/Makefile.am	2004-06-05 20:36:39.589610072 +0200
+@@ -63,7 +63,6 @@
  # check saHpiEventGet function of the daemon
  event_get_SOURCES     = event_get.c
- event_get_LDADD       = libopenhpiclient.la $(top_builddir)/marshal/libmarshal.la $(top_builddir)/utils/libopenhpiutils.la
+ event_get_LDADD       = libopenhpiclient.la $(top_builddir)/marshal/libopenhpimarshal.la $(top_builddir)/utils/libopenhpiutils.la
 -event_get_LDFLAGS     = -static
  
  
