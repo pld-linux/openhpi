@@ -103,32 +103,6 @@
  
         IpmiLog( "Using host at %d.%d.%d.%d.\n",
                  a & 0xff, (a >> 8 ) & 0xff, 
---- openhpi-0.7.0/plugins/snmp_bc/t/snmp_bc_inventory.c.orig	2004-02-04 03:15:12.000000000 +0000
-+++ openhpi-0.7.0/plugins/snmp_bc/t/snmp_bc_inventory.c	2004-02-22 15:55:48.000000000 +0000
-@@ -754,8 +754,8 @@
- 
-         l_data = data;
-         l_data->Validity =  SAHPI_INVENT_DATA_INVALID;
--        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)l_data + sizeof(SaHpiInventoryDataT) +
--                                        sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT);
-+        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)(void*)(((char*)l_data) + sizeof(SaHpiInventoryDataT) +
-+                                        sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT));
-         l_data->DataRecords[1] = NULL;
- 
-         if(rdr != NULL) {
---- openhpi-0.7.0/plugins/snmp_bc/snmp_bc_inventory.c.orig	2004-02-04 03:15:12.000000000 +0000
-+++ openhpi-0.7.0/plugins/snmp_bc/snmp_bc_inventory.c	2004-02-22 16:00:31.000000000 +0000
-@@ -754,8 +754,8 @@
- 
-         l_data = data;
-         l_data->Validity =  SAHPI_INVENT_DATA_INVALID;
--        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)l_data + sizeof(SaHpiInventoryDataT) +
--                                        sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT);
-+        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)(void*)(((char*)l_data) + sizeof(SaHpiInventoryDataT) +
-+                                        sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT));
-         l_data->DataRecords[1] = NULL;
- 
-         if(rdr != NULL) {
 --- openhpi-0.6.0/plugins/ipmidirect/ipmi_log.cpp.orig	2004-01-26 08:29:00.000000000 +0000
 +++ openhpi-0.6.0/plugins/ipmidirect/ipmi_log.cpp	2004-02-22 16:06:31.000000000 +0000
 @@ -181,7 +181,7 @@
