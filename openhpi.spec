@@ -1,21 +1,26 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	0.5.0
-Release:	3
+Version:	0.6.0
+Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	d21ccfbadb181f562c8b425a4af0f33f
+# Source0-md5:	32c96d325c390dfff89399679414fd44
+Source1:	%{name}-sc_sensor_data.h
 Patch0:		%{name}-snmp.patch
 Patch1:		%{name}-types.patch
-Patch2:		%{name}-glib.patch
+Patch2:		%{name}-amfix.patch
+Patch3:		%{name}-sh.patch
+Patch4:		%{name}-ipmi.patch
 URL:		http://openhpi.sourceforge.net/
-BuildRequires:	OpenIPMI-devel >= 1.1.8
-BuildRequires:	autoconf >= 2.50
+BuildRequires:	OpenIPMI-devel >= 1.3.0
+BuildRequires:	autoconf >= 2.57
 BuildRequires:	automake >= 1.5
 BuildRequires:	docbook-dtd41-sgml
 BuildRequires:	docbook-utils
+BuildRequires:	fam-devel
+BuildRequires:	gcc >= 5:3.2.0
 BuildRequires:	glib2-devel >= 2.0.0
 BuildRequires:	libltdl-devel
 BuildRequires:	libstdc++-devel
@@ -46,7 +51,7 @@ takich jak klastrowanie, wirtualizacja czy symulacja.
 Summary:	Development part of OpenHPI Toolkit library
 Summary(pl):	Programistyczna czê¶æ biblioteki OpenHPI
 Group:		Development/Libraries
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 Requires:	glib2-devel >= 2.0.0
 Requires:	libltdl-devel
 
@@ -60,7 +65,7 @@ Programistyczna czê¶æ biblioteki OpenHPI.
 Summary:	Static OpenHPI library
 Summary(pl):	Statyczna biblioteka OpenHPI
 Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}
+Requires:	%{name}-devel = %{version}-%{release}
 
 %description static
 Static OpenHPI Toolkit libraries.
@@ -72,7 +77,7 @@ Statyczna biblioteka OpenHPI.
 Summary:	ipmi plugin for OpenHPI
 Summary(pl):	Wtyczka ipmi dla OpenHPI
 Group:		Libraries
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description plugin-ipmi
 ipmi plugin for OpenHPI.
@@ -84,7 +89,7 @@ Wtyczka ipmi dla OpenHPI.
 Summary:	ipmidirect plugin for OpenHPI
 Summary(pl):	Wtyczka ipmidirect dla OpenHPI
 Group:		Libraries
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description plugin-ipmidirect
 ipmidirect plugin for OpenHPI.
@@ -96,7 +101,7 @@ Wtyczka ipmidirect dla OpenHPI.
 Summary:	SNMP plugins for OpenHPI
 Summary(pl):	Wtyczki SNMP dla OpenHPI
 Group:		Libraries
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description plugin-snmp
 SNMP plugins for OpenHPI: snmp_bc and snmp_client.
@@ -104,11 +109,23 @@ SNMP plugins for OpenHPI: snmp_bc and snmp_client.
 %description plugin-snmp -l pl
 Wtyczki SNMP dla OpenHPI: snmp_bc oraz snmp_client.
 
+%package plugin-simulator
+Summary:	simulator plugin for OpenHPI
+Summary(pl):	Wtyczka simulator dla OpenHPI
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description plugin-simulator
+simulator plugin for OpenHPI.
+
+%description plugin-simulator -l pl
+Wtyczka simulator dla OpenHPI.
+
 %package plugin-sysfs
 Summary:	sysfs plugin for OpenHPI
 Summary(pl):	Wtyczka sysfs dla OpenHPI
 Group:		Libraries
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 
 %description plugin-sysfs
 sysfs plugin for OpenHPI.
@@ -121,6 +138,12 @@ Wtyczka sysfs dla OpenHPI.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+
+# missing from 0.6.0 dist
+test ! -f plugins/snmp_client/sc_sensor_data.h
+cp %{SOURCE1} plugins/snmp_client/sc_sensor_data.h
 
 # speed up build, lower disk space usage
 for f in `find . -name Makefile.am | xargs grep -l 'AM_CFLAGS.* -g '`; do
@@ -163,8 +186,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/%{name}
 %attr(755,root,root) %{_libdir}/%{name}/libdummy.so*
 %{_libdir}/%{name}/libdummy.la
-%attr(755,root,root) %{_libdir}/%{name}/libsimulator.so*
-%{_libdir}/%{name}/libsimulator.la
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
 %{_libdir}/%{name}/libwatchdog.la
 %dir %{_sysconfdir}/openhpi
@@ -191,12 +212,19 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/libipmidirect.so*
 %{_libdir}/%{name}/libipmidirect.la
 
+%files plugin-simulator
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/%{name}/libsimulator.so*
+%{_libdir}/%{name}/libsimulator.la
+
 %files plugin-snmp
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/libsnmp_bc.so*
 %{_libdir}/%{name}/libsnmp_bc.la
 %attr(755,root,root) %{_libdir}/%{name}/libsnmp_client.so*
 %{_libdir}/%{name}/libsnmp_client.la
+%attr(755,root,root) %{_libdir}/%{name}/libsnmp_rsa.so*
+%{_libdir}/%{name}/libsnmp_rsa.la
 
 %files plugin-sysfs
 %defattr(644,root,root,755)
