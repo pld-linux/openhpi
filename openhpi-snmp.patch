@@ -10,3 +10,17 @@
  dnl Checks for library functions.
  AC_FUNC_ERROR_AT_LINE
  AC_FUNC_VPRINTF
+--- openhpi-2.0.0/snmp/snmp_utils.h.orig	2004-10-24 19:48:49.000000000 +0200
++++ openhpi-2.0.0/snmp/snmp_utils.h	2005-01-17 22:03:05.343498768 +0100
+@@ -38,6 +38,11 @@
+ #define NETSNMP_INLINE
+ #define RETSIGTYPE void
+ #define NET_SNMP_CONFIG_H
++#define HAVE_INT32_T
++#define HAVE_UINT32_T
++#define HAVE_INT64_T
++#define HAVE_UINT64_T
++#define HAVE_STRTOK_R
+ /* Added this to avoid redefinition conflict
+  * in opteron based platforms between the linux headers
+  * and the net-snmp headers. -- Renier 9/27/04

@@ -1,13 +1,3 @@
---- openhpi-0.9.0/openhpid/Makefile.am.orig	2004-05-10 18:19:53.000000000 +0200
-+++ openhpi-0.9.0/openhpid/Makefile.am	2004-06-05 20:36:39.589610072 +0200
-@@ -63,7 +63,6 @@
- # check saHpiEventGet function of the daemon
- event_get_SOURCES     = event_get.c
- event_get_LDADD       = libopenhpiclient.la $(top_builddir)/marshal/libopenhpimarshal.la $(top_builddir)/utils/libopenhpiutils.la
--event_get_LDFLAGS     = -static
- 
- 
- clean:
 --- openhpi-0.6.0/plugins/ipmidirect/Makefile.am.orig	2004-03-11 09:54:12.000000000 +0100
 +++ openhpi-0.6.0/plugins/ipmidirect/Makefile.am	2004-03-27 14:19:42.294689280 +0100
 @@ -110,7 +110,6 @@
