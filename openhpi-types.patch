@@ -1,5 +1,5 @@
---- openhpi-0.6.0/plugins/snmp_client/snmp_client_get_rdrs.c.orig	2004-02-22 02:28:11.000000000 +0000
-+++ openhpi-0.6.0/plugins/snmp_client/snmp_client_get_rdrs.c	2004-02-22 03:10:15.000000000 +0000
+--- openhpi-0.7.0/plugins/snmp_client/snmp_client_get_rdrs.c.orig	2004-02-22 02:28:11.000000000 +0000
++++ openhpi-0.7.0/plugins/snmp_client/snmp_client_get_rdrs.c	2004-02-22 03:10:15.000000000 +0000
 @@ -317,9 +317,8 @@
                          if (vars->type == ASN_OCTET_STR) {
  
@@ -15,7 +15,7 @@
                                                  ntohl(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Discrete.Default);
                                          break;
                                  case SAHPI_CTRL_TYPE_ANALOG:
--                                        data = (int *)vars->val.string;
+-                                        data = (int *)(void *)vars->val.string;
 -                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min = *data;          
 -                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min =
 -                                                ntohl(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min);
@@ -40,7 +40,7 @@
                                                  repeat, 
                                                  sizeof(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.Repeat));
                                          repeat++;
--                                        stream_data = (int *)repeat;
+-                                        stream_data = (int *)(void *)repeat;
                                          /* set .StreamLength */
                                          memcpy(&sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.StreamLength,
 -                                               stream_data, 
@@ -57,8 +57,8 @@
                                                 SAHPI_CTRL_MAX_STREAM_LENGTH); 
                                                break;
                                  case SAHPI_CTRL_TYPE_TEXT:
---- openhpi-0.6.0/plugins/dummy/dummy.c.orig	2004-02-04 03:15:11.000000000 +0000
-+++ openhpi-0.6.0/plugins/dummy/dummy.c	2004-02-22 03:47:54.000000000 +0000
+--- openhpi-0.7.0/plugins/dummy/dummy.c.orig	2004-02-04 03:15:11.000000000 +0000
++++ openhpi-0.7.0/plugins/dummy/dummy.c	2004-02-22 03:47:54.000000000 +0000
 @@ -1355,6 +1355,8 @@
  	return(rval);
  }
@@ -69,144 +69,42 @@
  				    SaHpiEirIdT num,
  				    SaHpiInventoryDataT *data)
 @@ -1386,8 +1388,8 @@
- 		memcpy(data, inventory, sizeof(*inventory));
  
  		for (i=0,pos=0; inventory->DataRecords[i]!=NULL; i++) {
--			data->DataRecords[i] = (SaHpiInventDataRecordT *)&inventory->data[pos];
+ 			/* FIXME:: very dirty hack to make code compile on IA64 */
+-			data->DataRecords[i] = (SaHpiInventDataRecordT *)(void *)&inventory->data[pos];
 -			pos+=inventory->DataRecords[i]->DataLength+8;
-+			data->DataRecords[i] = (SaHpiInventDataRecordT *)(void*)&inventory->data[pos];
++			data->DataRecords[i] = (SaHpiInventDataRecordT *)(void *)&inventory->data[pos];
 +			pos=align(pos + inventory->DataRecords[i]->DataLength+8);
  		}
  
  	}
 @@ -1427,9 +1429,9 @@
- 		inventory->Validity = data->Validity;
  	
  		for (i=0, pos=0; data->DataRecords[i] != NULL; i++) {
--			inventory->DataRecords[i] = (SaHpiInventDataRecordT *)&inventory->data[pos];
-+			inventory->DataRecords[i] = (SaHpiInventDataRecordT *)(void*)&inventory->data[pos];
+ 			/* FIXME:: very dirty hack to make code compile on IA64 */
+-			inventory->DataRecords[i] = (SaHpiInventDataRecordT *)(void *)&inventory->data[pos];
++			inventory->DataRecords[i] = (SaHpiInventDataRecordT *)(void *)&inventory->data[pos];
  			memcpy(inventory->DataRecords[i], data->DataRecords[i], data->DataRecords[i]->DataLength+8);
 -			pos+=data->DataRecords[i]->DataLength+8;
 +			pos=align(pos + data->DataRecords[i]->DataLength+8);
  		}
  		inventory->DataRecords[i] = NULL;
  	}
---- openhpi-0.6.0/plugins/ipmidirect/ipmi.cpp.orig	2004-02-04 03:15:11.000000000 +0000
-+++ openhpi-0.6.0/plugins/ipmidirect/ipmi.cpp	2004-02-22 13:36:05.000000000 +0000
+--- openhpi-0.7.0/plugins/ipmidirect/ipmi.cpp.orig	2004-02-04 03:15:11.000000000 +0000
++++ openhpi-0.7.0/plugins/ipmidirect/ipmi.cpp	2004-02-22 13:36:05.000000000 +0000
 @@ -908,7 +908,8 @@
            }
  
         memcpy( &lan_addr, ent->h_addr_list[0], ent->h_length );
--       unsigned int a = *(unsigned int *)ent->h_addr_list[0];
+-       unsigned int a = *(unsigned int *)(void *)ent->h_addr_list[0];
 +       unsigned int a;
 +       memcpy(&a, ent->h_addr_list[0], sizeof(a));
  
         IpmiLog( "Using host at %d.%d.%d.%d.\n",
                  a & 0xff, (a >> 8 ) & 0xff, 
---- openhpi-0.6.0/plugins/ipmidirect/ipmi_con_lan.cpp.orig	2004-02-04 10:33:09.000000000 +0000
-+++ openhpi-0.6.0/plugins/ipmidirect/ipmi_con_lan.cpp	2004-02-22 13:38:00.000000000 +0000
-@@ -790,7 +790,7 @@
- 
-   // Make sure the source IP matches what we expect the other end to
-   // be.
--  ipaddr = (struct sockaddr_in *)&ipaddrd;
-+  ipaddr = (struct sockaddr_in *)(void*)&ipaddrd;
- 
-   if (    (ipaddr->sin_port != m_ip_addr.sin_port)
-        || (ipaddr->sin_addr.s_addr != m_ip_addr.sin_addr.s_addr) )
---- openhpi-0.6.0/plugins/ipmidirect/ipmi_fru.cpp.orig	2004-02-04 03:15:11.000000000 +0000
-+++ openhpi-0.6.0/plugins/ipmidirect/ipmi_fru.cpp	2004-02-22 13:33:42.000000000 +0000
-@@ -24,7 +24,7 @@
- static SaHpiTextBufferT *
- SetItem( cIpmiFruRecord *fr, unsigned char *&p, int &s, const char *name )
- {
--  SaHpiTextBufferT *t = (SaHpiTextBufferT *)p;
-+  SaHpiTextBufferT *t = (SaHpiTextBufferT *)(void*)p;
-   memset( t->Data, 0, SAHPI_MAX_TEXT_BUFFER_LENGTH );
- 
-   cIpmiFruItem *i = fr->Find( name );
-@@ -218,9 +218,14 @@
-      }
-   else
-      {
--       t->DataType = SAHPI_TL_TYPE_BINARY;
--       t->Language = SAHPI_LANG_UNDEF;
--       t->DataLength = 0;
-+       SaHpiTextTypeT tt = SAHPI_TL_TYPE_BINARY;
-+       SaHpiLanguageT tl = SAHPI_LANG_UNDEF;
-+       SaHpiUint8T td = 0;
-+
-+       /* possibly unaligned access - use memcpy */
-+       memcpy(&(t->DataType), &tt, sizeof(t->DataType));
-+       memcpy(&(t->Language), &tl, sizeof(t->Language));
-+       memcpy(&(t->DataLength), &td, sizeof(t->DataLength));
-      }
- 
-   s += sizeof( SaHpiTextBufferT );
-@@ -185,28 +194,34 @@
-   for( int i = NumRecords() - 1; i >= 0; i-- )
-      {
-        cIpmiFruRecord *fr = GetRecord( i );
--       SaHpiInventDataRecordT *r = (SaHpiInventDataRecordT *)p;
-+       /* possibly unaligned access - use memcpy */
-+       SaHpiInventDataRecordT *r = (SaHpiInventDataRecordT *)(void*)p;
-+       SaHpiInventDataRecordTypeT rt;
-        int s;
- 
-        if ( !strcmp( fr->m_name, dIpmiFruRecordInternalUseArea ) )
- 	  {
- 	    s = fr->InternalUseRecord( &r->RecordData.InternalUse );
--	    r->RecordType = SAHPI_INVENT_RECTYPE_INTERNAL_USE;
-+	    rt = SAHPI_INVENT_RECTYPE_INTERNAL_USE;
-+	    memcpy(&(r->RecordType), &rt, sizeof(r->RecordType));
- 	  }
-        else if ( !strcmp( fr->m_name, dIpmiFruRecordChassisInfoArea ) )
- 	  {
- 	    s = fr->ChassisInfoAreaRecord( &r->RecordData.ChassisInfo );
--	    r->RecordType = SAHPI_INVENT_RECTYPE_CHASSIS_INFO;
-+	    rt = SAHPI_INVENT_RECTYPE_CHASSIS_INFO;
-+	    memcpy(&(r->RecordType), &rt, sizeof(r->RecordType));
- 	  }
-        else if ( !strcmp( fr->m_name, dIpmiFruRecordBoardInfoArea ) )
- 	  {
-             s = fr->BoradInfoAreaRecord( &r->RecordData.BoardInfo );
--	    r->RecordType = SAHPI_INVENT_RECTYPE_BOARD_INFO;
-+	    rt = SAHPI_INVENT_RECTYPE_BOARD_INFO;
-+	    memcpy(&(r->RecordType), &rt, sizeof(r->RecordType));
- 	  }
-        else if ( !strcmp( fr->m_name, dIpmiFruRecordProductInfoArea ) )
- 	  {
- 	    s = fr->ProductInfoAreaRecord( &r->RecordData.ProductInfo );
--	    r->RecordType = SAHPI_INVENT_RECTYPE_PRODUCT_INFO;
-+	    rt = SAHPI_INVENT_RECTYPE_PRODUCT_INFO;
-+	    memcpy(&(r->RecordType), &rt, sizeof(r->RecordType));
- 	  }
-        else if ( !strcmp( fr->m_name, dIpmiFruRecordMultiRecord ) )
- 	    continue;
-@@ -216,8 +231,9 @@
- 	    continue;
-           }
- 
--       data.DataRecords[idx++] = (SaHpiInventDataRecordT *)p;
--       r->DataLength = s;
-+       data.DataRecords[idx++] = (SaHpiInventDataRecordT *)(void*)p;
-+       SaHpiUint32T dl = s;
-+       memcpy(&(r->DataLength), &dl, sizeof(r->DataLength));
-        s += sizeof( SaHpiInventDataRecordT ) - sizeof( SaHpiInventDataUnionT );
-        p += s;
-        size += s;
-@@ -304,7 +320,8 @@
- 
-   // calulate fru inventory size
-   unsigned char *buffer = new unsigned char[1024*128];
--  SaHpiInventoryDataT *d = (SaHpiInventoryDataT *)buffer;
-+  /* new will return aligned pointer? */
-+  SaHpiInventoryDataT *d = (SaHpiInventoryDataT *)(void*)buffer;
-   m_inventory_size = GetInventoryInfo( *d );
-   delete [] buffer;
- 
---- openhpi-0.6.0/plugins/snmp_bc/t/snmp_bc.c.orig	2004-02-04 03:15:12.000000000 +0000
-+++ openhpi-0.6.0/plugins/snmp_bc/t/snmp_bc.c	2004-02-22 15:55:48.000000000 +0000
+--- openhpi-0.7.0/plugins/snmp_bc/t/snmp_bc_inventory.c.orig	2004-02-04 03:15:12.000000000 +0000
++++ openhpi-0.7.0/plugins/snmp_bc/t/snmp_bc_inventory.c	2004-02-22 15:55:48.000000000 +0000
 @@ -754,8 +754,8 @@
  
          l_data = data;
@@ -218,8 +116,8 @@
          l_data->DataRecords[1] = NULL;
  
          if(rdr != NULL) {
---- openhpi-0.6.0/plugins/snmp_bc/snmp_bc.c.orig	2004-02-04 03:15:12.000000000 +0000
-+++ openhpi-0.6.0/plugins/snmp_bc/snmp_bc.c	2004-02-22 16:00:31.000000000 +0000
+--- openhpi-0.7.0/plugins/snmp_bc/snmp_bc_inventory.c.orig	2004-02-04 03:15:12.000000000 +0000
++++ openhpi-0.7.0/plugins/snmp_bc/snmp_bc_inventory.c	2004-02-22 16:00:31.000000000 +0000
 @@ -754,8 +754,8 @@
  
          l_data = data;

@@ -18,3 +18,14 @@
      ])
  
  #
+--- openhpi-0.7.0/acinclude.m4.orig	2004-05-20 01:04:15.355302000 +0200
++++ openhpi-0.7.0/acinclude.m4	2004-05-20 01:07:05.808390184 +0200
+@@ -153,7 +153,7 @@
+ 				   OPENIPMI_VERSION_RELEASE);" >> $OH_OI_SRC
+ 	echo "return 0;}" >> $OH_OI_SRC
+ 
+-	gcc -o $OH_OI_FILE $OH_OI_SRC >& /dev/null
++	gcc -o $OH_OI_FILE $OH_OI_SRC > /dev/null 2>&1
+ 
+ 	if test -f "ipmi_ver"; then
+ 		OPENIPMI_VERSION=`./ipmi_ver | \
