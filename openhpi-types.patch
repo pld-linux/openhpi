@@ -134,3 +134,14 @@
  		if (rv != SA_OK)
  			printf("discovery failed\n");
  
+--- openhpi-1.0.0/openhpid/event_get.c.orig	2004-04-05 07:52:32.000000000 +0000
++++ openhpi-1.0.0/openhpid/event_get.c	2004-07-31 08:34:36.000000000 +0000
+@@ -54,7 +54,7 @@
+   // 11:11:11
+   strftime( b, 10, "%H:%M:%S", &tmt );
+ 
+-  sprintf( b + 9 - 1, ".%03ld ", tv.tv_usec / 1000 );
++  sprintf( b + 9 - 1, ".%03ld ", (long)(tv.tv_usec / 1000) );
+ 
+   va_list ap;
+   va_start( ap, fmt );

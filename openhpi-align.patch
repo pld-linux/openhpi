@@ -249,3 +249,47 @@
                               __set_control_state, info);
  }
  
+--- openhpi-1.0.0/plugins/snmp_rsa/snmp_rsa_inventory.c.orig	2004-04-05 20:59:44.000000000 +0000
++++ openhpi-1.0.0/plugins/snmp_rsa/snmp_rsa_inventory.c	2004-07-31 08:07:00.000000000 +0000
+@@ -374,7 +374,7 @@
+ 
+         l_data = data;
+         l_data->Validity =  SAHPI_INVENT_DATA_INVALID;
+-        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)l_data + sizeof(SaHpiInventoryDataT) +
++        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)(void*)l_data + sizeof(SaHpiInventoryDataT) +
+                                         sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT);
+         l_data->DataRecords[1] = NULL;
+ 
+--- openhpi-1.0.0/plugins/snmp_rsa/t/snmp_rsa_inventory.c.orig	2004-04-05 20:59:44.000000000 +0000
++++ openhpi-1.0.0/plugins/snmp_rsa/t/snmp_rsa_inventory.c	2004-07-31 07:37:06.000000000 +0000
+@@ -374,7 +374,7 @@
+ 
+         l_data = data;
+         l_data->Validity =  SAHPI_INVENT_DATA_INVALID;
+-        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)l_data + sizeof(SaHpiInventoryDataT) +
++        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)(void*)l_data + sizeof(SaHpiInventoryDataT) +
+                                         sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT);
+         l_data->DataRecords[1] = NULL;
+ 
+--- openhpi-1.0.0/plugins/snmp_bc/snmp_bc_inventory.c.orig	2004-06-21 14:37:30.000000000 +0000
++++ openhpi-1.0.0/plugins/snmp_bc/snmp_bc_inventory.c	2004-07-31 08:26:11.000000000 +0000
+@@ -361,7 +361,7 @@
+         struct oh_handler_state *handle = (struct oh_handler_state *)hnd;
+         SaHpiRdrT *rdr = oh_get_rdr_by_type(handle->rptcache, id, SAHPI_INVENTORY_RDR, num);
+ 
+-        l_data = (struct snmp_bc_inventory_data *) data;
++        l_data = (struct snmp_bc_inventory_data *) (void*)data;
+         l_data->Validity =  SAHPI_INVENT_DATA_INVALID;
+                 
+         /* Currently supporting only one data record */
+--- openhpi-1.0.0/plugins/snmp_bc/t/snmp_bc_inventory.c.orig	2004-06-21 14:37:30.000000000 +0000
++++ openhpi-1.0.0/plugins/snmp_bc/t/snmp_bc_inventory.c	2004-07-31 08:17:28.000000000 +0000
+@@ -361,7 +361,7 @@
+         struct oh_handler_state *handle = (struct oh_handler_state *)hnd;
+         SaHpiRdrT *rdr = oh_get_rdr_by_type(handle->rptcache, id, SAHPI_INVENTORY_RDR, num);
+ 
+-        l_data = (struct snmp_bc_inventory_data *) data;
++        l_data = (struct snmp_bc_inventory_data *) (void*)data;
+         l_data->Validity =  SAHPI_INVENT_DATA_INVALID;
+                 
+         /* Currently supporting only one data record */
