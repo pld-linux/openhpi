@@ -1,21 +1,18 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	0.6.0
-Release:	2
+Version:	0.7.0
+Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	32c96d325c390dfff89399679414fd44
-Source1:	%{name}-sc_sensor_data.h
-Patch0:		%{name}-snmp.patch
-Patch1:		%{name}-types.patch
-Patch2:		%{name}-amfix.patch
-Patch3:		%{name}-sh.patch
-Patch4:		%{name}-ipmi.patch
-Patch5:		%{name}-glib.patch
+# Source0-md5:	122de7f7bb1ac1862c10e485062d026c
+Patch0:		%{name}-types.patch
+Patch1:		%{name}-amfix.patch
+Patch2:		%{name}-sh.patch
+Patch3:		%{name}-glib.patch
 URL:		http://openhpi.sourceforge.net/
-BuildRequires:	OpenIPMI-devel >= 1.3.0
+BuildRequires:	OpenIPMI-devel >= 1.3.6
 BuildRequires:	autoconf >= 2.57
 BuildRequires:	automake >= 1.5
 BuildRequires:	docbook-dtd41-sgml
@@ -140,12 +137,6 @@ Wtyczka sysfs dla OpenHPI.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%patch5 -p1
-
-# missing from 0.6.0 dist
-test ! -f plugins/snmp_client/sc_sensor_data.h
-cp %{SOURCE1} plugins/snmp_client/sc_sensor_data.h
 
 # speed up build, lower disk space usage
 for f in `find . -name Makefile.am | xargs grep -l 'AM_CFLAGS.* -g '`; do
@@ -190,6 +181,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/libdummy.la
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
 %{_libdir}/%{name}/libwatchdog.la
+%attr(755,root,root) %{_libdir}/%{name}/libremote_client.so*
+%{_libdir}/%{name}/libremote_client.la
 %dir %{_sysconfdir}/openhpi
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/openhpi/openhpi.conf
 
