@@ -13,6 +13,7 @@ Patch1:		%{name}-types.patch
 Patch2:		%{name}-amfix.patch
 Patch3:		%{name}-sh.patch
 Patch4:		%{name}-ipmi.patch
+Patch5:		%{name}-glib.patch
 URL:		http://openhpi.sourceforge.net/
 BuildRequires:	OpenIPMI-devel >= 1.3.0
 BuildRequires:	autoconf >= 2.57
@@ -140,6 +141,7 @@ Wtyczka sysfs dla OpenHPI.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 # missing from 0.6.0 dist
 test ! -f plugins/snmp_client/sc_sensor_data.h
