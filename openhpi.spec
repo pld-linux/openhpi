@@ -13,7 +13,7 @@ Patch2:		%{name}-sh.patch
 Patch3:		%{name}-glib.patch
 Patch4:		%{name}-align.patch
 URL:		http://openhpi.sourceforge.net/
-BuildRequires:	OpenIPMI-devel >= 1.3.6
+BuildRequires:	OpenIPMI-devel >= 1.3.9
 BuildRequires:	autoconf >= 2.57
 BuildRequires:	automake >= 1.5
 BuildRequires:	docbook-dtd41-sgml
