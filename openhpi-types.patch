@@ -415,3 +415,40 @@
                          err = saHpiEntityInventoryDataRead(session_id, resource_id,
                                                              l_eirid, l_buffersize,
                                                              l_inventdata, &l_actualsize);
+--- openhpi-0.5.0/src/plugins/snmp_bc/t/snmp_bc.c.orig	2004-02-04 03:15:12.000000000 +0000
++++ openhpi-0.5.0/src/plugins/snmp_bc/t/snmp_bc.c	2004-02-22 15:55:48.000000000 +0000
+@@ -754,8 +754,8 @@
+ 	total_len = 0;
+         l_data = data;
+         l_data->Validity =  SAHPI_INVENT_DATA_INVALID;
+-        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)l_data + sizeof(SaHpiInventoryDataT) + 
+-					sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT);
++        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)(void*)(((char*)l_data) + sizeof(SaHpiInventoryDataT) + 
++					sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT));
+         l_data->DataRecords[1] = NULL;
+ 
+         if(rdr != NULL) {
+--- openhpi-0.5.0/src/plugins/snmp_bc/snmp_bc.c.orig	2004-02-04 03:15:12.000000000 +0000
++++ openhpi-0.5.0/src/plugins/snmp_bc/snmp_bc.c	2004-02-22 16:00:31.000000000 +0000
+@@ -754,8 +754,8 @@
+ 	total_len = 0;
+         l_data = data;
+         l_data->Validity =  SAHPI_INVENT_DATA_INVALID;
+-        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)l_data + sizeof(SaHpiInventoryDataT) + 
+-					sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT);
++        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)(void*)(((char*)l_data) + sizeof(SaHpiInventoryDataT) + 
++					sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT));
+         l_data->DataRecords[1] = NULL;
+ 
+         if(rdr != NULL) {
+--- openhpi-0.5.0/src/plugins/ipmidirect/ipmi_log.cpp.orig	2004-01-26 08:29:00.000000000 +0000
++++ openhpi-0.5.0/src/plugins/ipmidirect/ipmi_log.cpp	2004-02-22 16:06:31.000000000 +0000
+@@ -181,7 +181,7 @@
+ 
+             gettimeofday( &tv, 0 );
+             IpmiTimeToString( tv.tv_sec, b );
+-            sprintf( b + dTimeStringSize - 1, ".%03ld ", tv.tv_usec / 1000 );
++            sprintf( b + dTimeStringSize - 1, ".%03ld ", (long)(tv.tv_usec / 1000) );
+             strcat( b, buf );
+             write( log_fd, b, strlen( b ) );
+           }
