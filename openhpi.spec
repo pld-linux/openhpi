@@ -12,6 +12,7 @@ URL:		http://openhpi.sourceforge.net/
 #BuildRequires:	OpenIPMI-devel >= 1.1.8
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake >= 1.5
+BuildRequires:	docbook-dtd41-sgml
 BuildRequires:	docbook-utils
 BuildRequires:	glib2-devel >= 2.0.0
 BuildRequires:	libltdl-devel
