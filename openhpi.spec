@@ -40,11 +40,11 @@ servers, but extendable for other problem domains such as clustering,
 virtualization and simulation.
 
 %description -l pl
-OpenHPI to otwarty projekt strorzony z zamiarem dostarczenia
+OpenHPI to otwarty projekt stworzony z zamiarem dostarczenia
 implementacji HPI (Hardware Platform Interface - interfejsu platformy
-sprzêtowej) Service Availability Forum. HPI udostêpnia uniwersjalny
-interfejs do tworzenia modeli systemów zasobów, zwykle dla serwerów w
-ramach i szafach, ale rozszerzalny dla innego rodzaju problemów,
+sprzêtowej) Service Availability Forum. HPI udostêpnia uniwersalny
+interfejs do tworzenia modeli systemów zasobów, zwykle dla serwerów 
+w ramach i szafach, ale rozszerzalny dla innego rodzaju problemów,
 takich jak klastrowanie, wirtualizacja czy symulacja.
 
 %package devel
