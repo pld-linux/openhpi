@@ -1,5 +1,5 @@
---- openhpi-0.5.0/src/snmp/snmp_util.h.orig	2004-02-03 02:21:51.000000000 +0100
-+++ openhpi-0.5.0/src/snmp/snmp_util.h	2004-02-09 20:30:52.079895432 +0100
+--- openhpi-0.6.0/snmp/snmp_util.h.orig	2004-02-03 02:21:51.000000000 +0100
++++ openhpi-0.6.0/snmp/snmp_util.h	2004-02-09 20:30:52.079895432 +0100
 @@ -20,6 +20,23 @@
  #include <net-snmp/net-snmp-config.h>
  #include <net-snmp/net-snmp-includes.h>
@@ -24,8 +24,8 @@
  #define MAX_ASN_STR_LEN 300
  
  /* Place-holder for values set and returned by snmp */
---- openhpi-0.5.0/src/plugins/snmp_client/snmp_client.c.orig	2004-02-05 23:08:45.000000000 +0100
-+++ openhpi-0.5.0/src/plugins/snmp_client/snmp_client.c	2004-02-09 20:28:43.087505256 +0100
+--- openhpi-0.6.0/plugins/snmp_client/snmp_client.c.orig	2004-02-05 23:08:45.000000000 +0100
++++ openhpi-0.6.0/plugins/snmp_client/snmp_client.c	2004-02-09 20:28:43.087505256 +0100
 @@ -18,6 +18,26 @@
  /* used for defining and externing the arrays that hold oids */
  #define _SNMP_CLIENT_C_ 
@@ -63,8 +63,8 @@
  #include <snmp_client.h>
  #include <snmp_client_res.h>
  
---- openhpi-0.5.0/src/plugins/snmp_client/snmp_client_discover.c.orig	2004-02-05 19:36:52.000000000 +0100
-+++ openhpi-0.5.0/src/plugins/snmp_client/snmp_client_discover.c	2004-02-09 20:29:17.430284360 +0100
+--- openhpi-0.6.0/plugins/snmp_client/snmp_client_discover.c.orig	2004-02-05 19:36:52.000000000 +0100
++++ openhpi-0.6.0/plugins/snmp_client/snmp_client_discover.c	2004-02-09 20:29:17.430284360 +0100
 @@ -18,6 +18,26 @@
  #include <stdio.h>
  #include <time.h>
@@ -102,8 +102,8 @@
  #include <snmp_client.h>
  #include <snmp_client_res.h>
  #include <snmp_client_utils.h>
---- openhpi-0.5.0/src/plugins/snmp_client/snmp_client_gen_evts.c.orig	2004-02-04 19:44:02.000000000 +0100
-+++ openhpi-0.5.0/src/plugins/snmp_client/snmp_client_gen_evts.c	2004-02-09 20:29:42.341497280 +0100
+--- openhpi-0.6.0/plugins/snmp_client/snmp_client_gen_evts.c.orig	2004-02-04 19:44:02.000000000 +0100
++++ openhpi-0.6.0/plugins/snmp_client/snmp_client_gen_evts.c	2004-02-09 20:29:42.341497280 +0100
 @@ -14,9 +14,25 @@
   *      David Judkovics <djudkovi@us.ibm.com>
   *
@@ -141,8 +141,8 @@
  
  #include <snmp_client.h>
  #include <snmp_client_res.h>
---- openhpi-0.5.0/src/plugins/snmp_client/snmp_client_get_rdrs.c.orig	2004-02-05 23:09:48.000000000 +0100
-+++ openhpi-0.5.0/src/plugins/snmp_client/snmp_client_get_rdrs.c	2004-02-09 20:29:59.036959184 +0100
+--- openhpi-0.6.0/plugins/snmp_client/snmp_client_get_rdrs.c.orig	2004-02-05 23:09:48.000000000 +0100
++++ openhpi-0.6.0/plugins/snmp_client/snmp_client_get_rdrs.c	2004-02-09 20:29:59.036959184 +0100
 @@ -18,6 +18,26 @@
  #include <stdio.h>
  #include <time.h>
@@ -180,8 +180,8 @@
  #include <snmp_client.h>
  #include <snmp_client_res.h>
  
---- openhpi-0.5.0/src/plugins/snmp_client/snmp_client_utils.c.orig	2004-02-06 19:41:26.000000000 +0100
-+++ openhpi-0.5.0/src/plugins/snmp_client/snmp_client_utils.c	2004-02-09 20:30:23.269275312 +0100
+--- openhpi-0.6.0/plugins/snmp_client/snmp_client_utils.c.orig	2004-02-06 19:41:26.000000000 +0100
++++ openhpi-0.6.0/plugins/snmp_client/snmp_client_utils.c	2004-02-09 20:30:23.269275312 +0100
 @@ -18,6 +18,26 @@
  #include <stdio.h>
  #include <time.h>
@@ -219,8 +219,8 @@
  #include <snmp_client.h>
  #include <snmp_client_res.h>
  #include <snmp_client_utils.h>
---- openhpi-0.5.0/src/plugins/snmp_bc/snmp_bc_session.h.orig	2003-12-05 23:09:46.000000000 +0100
-+++ openhpi-0.5.0/src/plugins/snmp_bc/snmp_bc_session.h	2004-02-09 20:28:55.759578808 +0100
+--- openhpi-0.6.0/plugins/snmp_bc/snmp_bc_session.h.orig	2003-12-05 23:09:46.000000000 +0100
++++ openhpi-0.6.0/plugins/snmp_bc/snmp_bc_session.h	2004-02-09 20:28:55.759578808 +0100
 @@ -17,11 +17,29 @@
  #ifndef SNMP_BC_SESSION_H
  #define SNMP_BC_SESSION_H

@@ -1,206 +1,64 @@
---- openhpi-0.5.0/src/plugins/snmp_client/snmp_client_utils.c.orig	2004-02-22 02:28:11.000000000 +0000
-+++ openhpi-0.5.0/src/plugins/snmp_client/snmp_client_utils.c	2004-02-22 03:11:26.000000000 +0000
-@@ -72,7 +72,7 @@
- 	
- 	bulk_pdu->max_repetitions = num_repetitions;
- 
--printf("OID LENGTH %d\n", bulk_objid_len);
-+printf("OID LENGTH %zd\n", bulk_objid_len);
- printf("Num Repetitions %d\n", num_repetitions);
- printf("OID %d\n", (int)bulk_objid[0]);
- printf("OID %d\n", (int)bulk_objid[1]);
---- openhpi-0.5.0/src/plugins/snmp_client/snmp_client_get_rdrs.c.orig	2004-02-22 02:28:11.000000000 +0000
-+++ openhpi-0.5.0/src/plugins/snmp_client/snmp_client_get_rdrs.c	2004-02-22 03:10:15.000000000 +0000
+--- openhpi-0.6.0/plugins/snmp_client/snmp_client_get_rdrs.c.orig	2004-02-22 02:28:11.000000000 +0000
++++ openhpi-0.6.0/plugins/snmp_client/snmp_client_get_rdrs.c	2004-02-22 03:10:15.000000000 +0000
 @@ -317,9 +317,8 @@
- 			if (vars->type == ASN_OCTET_STR) {
+                         if (vars->type == ASN_OCTET_STR) {
  
- 				/* local variables used by case statements */
--				int *data;
-+				int data; /* 32-bit */
- 				char *repeat;
--				int *stream_data;
- 				char *text_info;
- 				char *oem_data;
+                                 /* local variables used by case statements */
+-                                int *data;
++                                int data; /* 32-bit */
+                                 char *repeat;
+-                                int *stream_data;
+                                 char *text_info;
+                                 char *oem_data;
  
 @@ -339,18 +338,12 @@
- 						ntohl(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Discrete.Default);
- 					break;
- 				case SAHPI_CTRL_TYPE_ANALOG:
--					data = (int *)vars->val.string;
--					sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min = *data;		
--					sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min =
--						ntohl(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min);
--					data++;
--					sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Max = *data;
--					sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Max =
--						ntohl(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Max);
--					data++;
--					sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Default = *data;
--					sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Default = 
--						ntohl(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Default);
-+					memcpy(&data, vars->val.string, sizeof(int));
-+					sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min = ntohl(data);
-+					memcpy(&data, vars->val.string + sizeof(int), sizeof(int));
-+					sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Max = ntohl(data);
-+					memcpy(&data, vars->val.string + 2*sizeof(int), sizeof(int));
-+					sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Default = ntohl(data);
- 					break;
- 				case SAHPI_CTRL_TYPE_STREAM:
- 					/* set repeat */
+                                                 ntohl(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Discrete.Default);
+                                         break;
+                                 case SAHPI_CTRL_TYPE_ANALOG:
+-                                        data = (int *)vars->val.string;
+-                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min = *data;          
+-                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min =
+-                                                ntohl(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min);
+-                                        data++;
+-                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Max = *data;
+-                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Max =
+-                                                ntohl(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Max);
+-                                        data++;
+-                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Default = *data;
+-                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Default = 
+-                                                ntohl(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Default);
++                                        memcpy(&data, vars->val.string, sizeof(int));
++                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Min = ntohl(data);
++                                        memcpy(&data, vars->val.string + sizeof(int), sizeof(int));
++                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Max = ntohl(data);
++                                        memcpy(&data, vars->val.string + 2*sizeof(int), sizeof(int));
++                                        sahpi_ctr_cap[i].CtrlRec.TypeUnion.Analog.Default = ntohl(data);
+                                         break;
+                                 case SAHPI_CTRL_TYPE_STREAM:
+                                         /* set repeat */
 @@ -359,17 +352,16 @@
- 					       repeat, 
- 					       sizeof(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.Repeat));
- 					repeat++;
--					stream_data = (int *)repeat;
- 					/* set .StreamLength */
- 					memcpy(&sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.StreamLength,
--					       stream_data, 
-+					       repeat, 
- 					       sizeof(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.StreamLength));
- 					sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.StreamLength = 
- 						ntohs(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.StreamLength);
--					stream_data++;
-+					repeat += sizeof(int);
- 					/* set the .Stream data */
- 					memcpy(&sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.Stream, 
--					       stream_data, 
-+					       repeat, 
- 					       SAHPI_CTRL_MAX_STREAM_LENGTH); 
+                                                 repeat, 
+                                                 sizeof(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.Repeat));
+                                         repeat++;
+-                                        stream_data = (int *)repeat;
+                                         /* set .StreamLength */
+                                         memcpy(&sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.StreamLength,
+-                                               stream_data, 
++                                               repeat, 
+                                                sizeof(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.StreamLength));
+                                         sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.StreamLength = 
+                                                 ntohs(sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.StreamLength);
+-                                        stream_data++;
++                                        repeat += sizeof(int);
+                                         /* set the .Stream data */
+                                         memcpy(&sahpi_ctr_cap[i].CtrlRec.TypeUnion.Stream.Default.Stream, 
+-                                               stream_data, 
++                                               repeat, 
+                                                SAHPI_CTRL_MAX_STREAM_LENGTH); 
                                                break;
- 				case SAHPI_CTRL_TYPE_TEXT:
-@@ -751,96 +743,94 @@
- 			vars = vars->next_variable;
- 		}
- 		/* SA_HPI_SENSOR_RANGE_READING_RAW */
--		SaHpiUint32T *raw;
-+		SaHpiUint32T raw;
- 		for (i = 0; i < get_value.integer; i++) {
- 			if (vars->type == ASN_OCTET_STR) {
--				raw = (SaHpiUint32T *)vars->val.string;
-+				memcpy(&raw, vars->val.string, sizeof(SaHpiUint32T));
- 				/* MAX */
--				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Max.Raw = 
--					(SaHpiUint32T)*raw++;
--				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Max.Raw =
--					ntohl(sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Max.Raw);
-+				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Max.Raw = ntohl(raw);
-+
- 				/* MIN */
--				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Min.Raw = 
--					(SaHpiUint32T)*raw++;
--				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Min.Raw =
--					ntohl(sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Min.Raw);
-+				memcpy(&raw, vars->val.string + sizeof(SaHpiUint32T), sizeof(SaHpiUint32T));
-+				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Min.Raw = ntohl(raw);
- 
- 				/* NOMINAL */
--				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Nominal.Raw = 
--					(SaHpiUint32T)*raw++;
--				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Nominal.Raw =
--					ntohl(sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Nominal.Raw);
-+				memcpy(&raw, vars->val.string + 2*sizeof(SaHpiUint32T), sizeof(SaHpiUint32T));
-+				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Nominal.Raw = ntohl(raw);
- 
- 				/* NORMAL_MAX */
--				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMax.Raw = 
--					(SaHpiUint32T)*raw++;
--				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMax.Raw =
--					ntohl(sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMax.Raw);
-+				memcpy(&raw, vars->val.string + 3*sizeof(SaHpiUint32T), sizeof(SaHpiUint32T));
-+				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMax.Raw = ntohl(raw);
- 
- 				/* NORMAL_MIN */
--				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMin.Raw = 
--					(SaHpiUint32T)*raw++;
--				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMin.Raw =
--					ntohl(sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMin.Raw);
-+				memcpy(&raw, vars->val.string + 4*sizeof(SaHpiUint32T), sizeof(SaHpiUint32T));
-+				sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMin.Raw = ntohl(raw);
- 			} else
- 				printf("SA_HPI_SENSOR_RANGE_FLAGS:something terrible has happened\n");
- 			vars = vars->next_variable;
- 		}
- 		/* SA_HPI_SENSOR_RANGE_READING_INTERPRETED */
--		SaHpiSensorInterpretedT *interpreted;
-+		SaHpiSensorInterpretedT interpreted;
- 		for (i = 0; i < get_value.integer; i++) {
- 			if (vars->type == ASN_OCTET_STR) {
--				interpreted = (SaHpiSensorInterpretedT *)vars->val.string;
-+				memcpy(&interpreted, vars->val.string, sizeof(interpreted));
- 				/* MAX */
- 				set_interpreted(
- 					&sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Max.Interpreted,
--					interpreted++);
-+					&interpreted);
- 				/* MIN */
-+				memcpy(&interpreted, vars->val.string + sizeof(interpreted), sizeof(interpreted));
- 				set_interpreted(
- 					&sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Min.Interpreted,
--					interpreted++);
-+					&interpreted);
- 				/* NOMINAL */
-+				memcpy(&interpreted, vars->val.string + 2*sizeof(interpreted), sizeof(interpreted));
- 				set_interpreted(
- 					&sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Nominal.Interpreted,
--					interpreted++);
-+					&interpreted);
- 
- 				/* NOMINAL_MAX */
-+				memcpy(&interpreted, vars->val.string + 3*sizeof(interpreted), sizeof(interpreted));
- 				set_interpreted(
- 					&sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMax.Interpreted,
--					interpreted++);
-+					&interpreted);
- 
- 				/*NOMINAL_MIN */
-+				memcpy(&interpreted, vars->val.string + 4*sizeof(interpreted), sizeof(interpreted));
- 				set_interpreted(
- 					&sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMax.Interpreted,
--					interpreted++);
-+					&interpreted);
- 
- 			} else
- 				printf("SA_HPI_SENSOR_RANGE_READING_INTERPRETED:something terrible has happened\n");
- 			vars = vars->next_variable;
- 		}
- 		/* SA_HPI_SENSOR_RANGE_READING_EVENT_SENSOR */
--		SaHpiSensorEvtStatusT *event_status;
-+		SaHpiSensorEvtStatusT event_status;
- 		for (i = 0; i < get_value.integer; i++) {
- 			if (vars->type == ASN_OCTET_STR) {
--				event_status = (SaHpiSensorEvtStatusT *)vars->val.string;
-+				memcpy(&event_status, vars->val.string, sizeof(event_status));
- 				/* MAX */
- 				set_event(&sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Max.EventStatus,
--					  event_status++);
-+					  &event_status);
- 				/* MIN */
-+				memcpy(&event_status, vars->val.string + sizeof(event_status), sizeof(event_status));
- 				set_event(&sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Min.EventStatus,
--						event_status++);
-+						&event_status);
- 				/* NOMINAL */
-+				memcpy(&event_status, vars->val.string + 2*sizeof(event_status), sizeof(event_status));
- 				set_event(&sahpi_sensor_cap[i].SensorRec.DataFormat.Range.Nominal.EventStatus,
--						event_status++);
-+						&event_status);
- 
- 				/* NOMINAL_MAX */
-+				memcpy(&event_status, vars->val.string + 3*sizeof(event_status), sizeof(event_status));
- 				set_event(&sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMax.EventStatus,
--						event_status++);
-+						&event_status);
- 
- 				/*NOMINAL_MIN */
-+				memcpy(&event_status, vars->val.string + 4*sizeof(event_status), sizeof(event_status));
- 				set_event(&sahpi_sensor_cap[i].SensorRec.DataFormat.Range.NormalMax.EventStatus,
--						event_status++);
-+						&event_status);
- 
- 			} else
- 				printf("SA_HPI_SENSOR_RANGE_READING_EVENT_SENSOR:something terrible has happened\n");
---- openhpi-0.5.0/src/plugins/dummy/dummy.c.orig	2004-02-04 03:15:11.000000000 +0000
-+++ openhpi-0.5.0/src/plugins/dummy/dummy.c	2004-02-22 03:47:54.000000000 +0000
+                                 case SAHPI_CTRL_TYPE_TEXT:
+--- openhpi-0.6.0/plugins/dummy/dummy.c.orig	2004-02-04 03:15:11.000000000 +0000
++++ openhpi-0.6.0/plugins/dummy/dummy.c	2004-02-22 03:47:54.000000000 +0000
 @@ -1355,6 +1355,8 @@
  	return(rval);
  }
@@ -233,8 +91,8 @@
  		}
  		inventory->DataRecords[i] = NULL;
  	}
---- openhpi-0.5.0/src/plugins/ipmidirect/ipmi.cpp.orig	2004-02-04 03:15:11.000000000 +0000
-+++ openhpi-0.5.0/src/plugins/ipmidirect/ipmi.cpp	2004-02-22 13:36:05.000000000 +0000
+--- openhpi-0.6.0/plugins/ipmidirect/ipmi.cpp.orig	2004-02-04 03:15:11.000000000 +0000
++++ openhpi-0.6.0/plugins/ipmidirect/ipmi.cpp	2004-02-22 13:36:05.000000000 +0000
 @@ -908,7 +908,8 @@
            }
  
@@ -245,8 +103,8 @@
  
         IpmiLog( "Using host at %d.%d.%d.%d.\n",
                  a & 0xff, (a >> 8 ) & 0xff, 
---- openhpi-0.5.0/src/plugins/ipmidirect/ipmi_con_lan.cpp.orig	2004-02-04 10:33:09.000000000 +0000
-+++ openhpi-0.5.0/src/plugins/ipmidirect/ipmi_con_lan.cpp	2004-02-22 13:38:00.000000000 +0000
+--- openhpi-0.6.0/plugins/ipmidirect/ipmi_con_lan.cpp.orig	2004-02-04 10:33:09.000000000 +0000
++++ openhpi-0.6.0/plugins/ipmidirect/ipmi_con_lan.cpp	2004-02-22 13:38:00.000000000 +0000
 @@ -790,7 +790,7 @@
  
    // Make sure the source IP matches what we expect the other end to
@@ -256,8 +114,8 @@
  
    if (    (ipaddr->sin_port != m_ip_addr.sin_port)
         || (ipaddr->sin_addr.s_addr != m_ip_addr.sin_addr.s_addr) )
---- openhpi-0.5.0/src/plugins/ipmidirect/fru.cpp.orig	2004-02-04 03:15:11.000000000 +0000
-+++ openhpi-0.5.0/src/plugins/ipmidirect/fru.cpp	2004-02-22 13:33:42.000000000 +0000
+--- openhpi-0.6.0/plugins/ipmidirect/ipmi_fru.cpp.orig	2004-02-04 03:15:11.000000000 +0000
++++ openhpi-0.6.0/plugins/ipmidirect/ipmi_fru.cpp	2004-02-22 13:33:42.000000000 +0000
 @@ -24,7 +24,7 @@
  static SaHpiTextBufferT *
  SetItem( cIpmiFruRecord *fr, unsigned char *&p, int &s, const char *name )
@@ -267,21 +125,7 @@
    memset( t->Data, 0, SAHPI_MAX_TEXT_BUFFER_LENGTH );
  
    cIpmiFruItem *i = fr->Find( name );
-@@ -35,16 +35,25 @@
- 
-        const cIpmiTextBuffer *b = &i->m_u.m_text_buffer;
- 
--       t->DataType = (SaHpiTextTypeT)b->m_type;
--       t->Language = (SaHpiLanguageT)b->m_language;
--       t->DataLength = b->m_len;
-+       /* possibly unaligned access - use memcpy */
-+       SaHpiTextTypeT tt = (SaHpiTextTypeT)b->m_type;
-+       SaHpiLanguageT tl = (SaHpiLanguageT)b->m_language;
-+       SaHpiUint8T td = b->m_len;
-+       memcpy(&(t->DataType), &tt, sizeof(t->DataType));
-+       memcpy(&(t->Language), &tl, sizeof(t->Language));
-+       memcpy(&(t->DataLength), &td, sizeof(t->DataLength));
-        memcpy( t->Data, b->m_data, b->m_len );
+@@ -218,9 +218,14 @@
       }
    else
       {
@@ -300,9 +144,9 @@
  
    s += sizeof( SaHpiTextBufferT );
 @@ -185,28 +194,34 @@
-   for( int i = fru->NumRecords() - 1; i >= 0; i-- )
+   for( int i = NumRecords() - 1; i >= 0; i-- )
       {
-        cIpmiFruRecord *fr = fru->GetRecord( i );
+        cIpmiFruRecord *fr = GetRecord( i );
 -       SaHpiInventDataRecordT *r = (SaHpiInventDataRecordT *)p;
 +       /* possibly unaligned access - use memcpy */
 +       SaHpiInventDataRecordT *r = (SaHpiInventDataRecordT *)(void*)p;
@@ -311,28 +155,28 @@
  
         if ( !strcmp( fr->m_name, dIpmiFruRecordInternalUseArea ) )
  	  {
- 	    s = InternalUseRecord( &r->RecordData.InternalUse, fr );
+ 	    s = fr->InternalUseRecord( &r->RecordData.InternalUse );
 -	    r->RecordType = SAHPI_INVENT_RECTYPE_INTERNAL_USE;
 +	    rt = SAHPI_INVENT_RECTYPE_INTERNAL_USE;
 +	    memcpy(&(r->RecordType), &rt, sizeof(r->RecordType));
  	  }
         else if ( !strcmp( fr->m_name, dIpmiFruRecordChassisInfoArea ) )
  	  {
- 	    s = ChassisInfoAreaRecord( &r->RecordData.ChassisInfo, fr );
+ 	    s = fr->ChassisInfoAreaRecord( &r->RecordData.ChassisInfo );
 -	    r->RecordType = SAHPI_INVENT_RECTYPE_CHASSIS_INFO;
 +	    rt = SAHPI_INVENT_RECTYPE_CHASSIS_INFO;
 +	    memcpy(&(r->RecordType), &rt, sizeof(r->RecordType));
  	  }
         else if ( !strcmp( fr->m_name, dIpmiFruRecordBoardInfoArea ) )
  	  {
- 	    s = BoradInfoAreaRecord( &r->RecordData.BoardInfo, fr );
+             s = fr->BoradInfoAreaRecord( &r->RecordData.BoardInfo );
 -	    r->RecordType = SAHPI_INVENT_RECTYPE_BOARD_INFO;
 +	    rt = SAHPI_INVENT_RECTYPE_BOARD_INFO;
 +	    memcpy(&(r->RecordType), &rt, sizeof(r->RecordType));
  	  }
         else if ( !strcmp( fr->m_name, dIpmiFruRecordProductInfoArea ) )
  	  {
- 	    s = ProductInfoAreaRecord( &r->RecordData.ProductInfo, fr );
+ 	    s = fr->ProductInfoAreaRecord( &r->RecordData.ProductInfo );
 -	    r->RecordType = SAHPI_INVENT_RECTYPE_PRODUCT_INFO;
 +	    rt = SAHPI_INVENT_RECTYPE_PRODUCT_INFO;
 +	    memcpy(&(r->RecordType), &rt, sizeof(r->RecordType));
@@ -358,97 +202,43 @@
 -  SaHpiInventoryDataT *d = (SaHpiInventoryDataT *)buffer;
 +  /* new will return aligned pointer? */
 +  SaHpiInventoryDataT *d = (SaHpiInventoryDataT *)(void*)buffer;
-   fru->m_inventory_size = GetInventoryInfo( fru, *d );
+   m_inventory_size = GetInventoryInfo( *d );
    delete [] buffer;
  
-@@ -320,7 +337,8 @@
-     for( i = 0; i < n; i++ )
-          *b++ = (unsigned char)i;
- 
--    d = (SaHpiInventoryDataT *)buffer;
-+    /* new will return aligned pointer? */
-+    d = (SaHpiInventoryDataT *)(void*)buffer;
-     unsigned int s = GetInventoryInfo( fru, *d );
- 
-     assert( s == fru->m_inventory_size );
---- openhpi-0.5.0/util/hpievent.c.orig	2003-07-28 18:21:21.000000000 +0000
-+++ openhpi-0.5.0/util/hpievent.c	2004-02-22 13:48:16.000000000 +0000
-@@ -333,7 +333,7 @@
-           printf("   -z  Display extra debug messages\n");
-           exit(1);
-   }
--  inv = (SaHpiInventoryDataT *)&inbuff[0];
-+  inv = (SaHpiInventoryDataT *)(void*)&inbuff[0];
- 
-   rv = saHpiInitialize(&hpiVer);
- 
---- openhpi-0.5.0/util/hpiinv.c.orig	2004-02-04 03:15:13.000000000 +0000
-+++ openhpi-0.5.0/util/hpiinv.c	2004-02-22 13:49:25.000000000 +0000
-@@ -269,7 +269,7 @@
- 		}
- 	}
- 
--	inv = (SaHpiInventoryDataT *)&inbuff[0];
-+	inv = (SaHpiInventoryDataT *)(void*)&inbuff[0];
- 	rv = saHpiInitialize(&hpiVer);
- 	if (rv != SA_OK) {
- 		printf("saHpiInitialize error %d\n",rv);
---- openhpi-0.5.0/util/hpifru.c.orig	2004-02-04 03:15:13.000000000 +0000
-+++ openhpi-0.5.0/util/hpifru.c	2004-02-22 13:48:46.000000000 +0000
-@@ -254,7 +254,7 @@
-           printf("   -z  Display extra debug messages\n");
-           exit(1);
-   }
--  inv = (SaHpiInventoryDataT *)&inbuff[0];
-+  inv = (SaHpiInventoryDataT *)(void*)&inbuff[0];
-   rv = saHpiInitialize(&hpiVer);
-   if (rv != SA_OK) {
-     printf("saHpiInitialize error %d\n",rv);
---- openhpi-0.5.0/examples/list_resources.c.orig	2004-02-04 16:10:19.000000000 +0000
-+++ openhpi-0.5.0/examples/list_resources.c	2004-02-22 13:47:20.000000000 +0000
-@@ -477,7 +477,7 @@
-                 {
-                         l_eirid = rdr.RdrTypeUnion.InventoryRec.EirId;
- 
--                        l_inventdata = (SaHpiInventoryDataT *)&inbuff[0];
-+                        l_inventdata = (SaHpiInventoryDataT *)(void*)&inbuff[0];
-                         err = saHpiEntityInventoryDataRead(session_id, resource_id,
-                                                             l_eirid, l_buffersize,
-                                                             l_inventdata, &l_actualsize);
---- openhpi-0.5.0/src/plugins/snmp_bc/t/snmp_bc.c.orig	2004-02-04 03:15:12.000000000 +0000
-+++ openhpi-0.5.0/src/plugins/snmp_bc/t/snmp_bc.c	2004-02-22 15:55:48.000000000 +0000
+--- openhpi-0.6.0/plugins/snmp_bc/t/snmp_bc.c.orig	2004-02-04 03:15:12.000000000 +0000
++++ openhpi-0.6.0/plugins/snmp_bc/t/snmp_bc.c	2004-02-22 15:55:48.000000000 +0000
 @@ -754,8 +754,8 @@
- 	total_len = 0;
+ 
          l_data = data;
          l_data->Validity =  SAHPI_INVENT_DATA_INVALID;
--        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)l_data + sizeof(SaHpiInventoryDataT) + 
--					sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT);
-+        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)(void*)(((char*)l_data) + sizeof(SaHpiInventoryDataT) + 
-+					sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT));
+-        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)l_data + sizeof(SaHpiInventoryDataT) +
+-                                        sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT);
++        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)(void*)(((char*)l_data) + sizeof(SaHpiInventoryDataT) +
++                                        sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT));
          l_data->DataRecords[1] = NULL;
  
          if(rdr != NULL) {
---- openhpi-0.5.0/src/plugins/snmp_bc/snmp_bc.c.orig	2004-02-04 03:15:12.000000000 +0000
-+++ openhpi-0.5.0/src/plugins/snmp_bc/snmp_bc.c	2004-02-22 16:00:31.000000000 +0000
+--- openhpi-0.6.0/plugins/snmp_bc/snmp_bc.c.orig	2004-02-04 03:15:12.000000000 +0000
++++ openhpi-0.6.0/plugins/snmp_bc/snmp_bc.c	2004-02-22 16:00:31.000000000 +0000
 @@ -754,8 +754,8 @@
- 	total_len = 0;
+ 
          l_data = data;
          l_data->Validity =  SAHPI_INVENT_DATA_INVALID;
--        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)l_data + sizeof(SaHpiInventoryDataT) + 
--					sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT);
-+        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)(void*)(((char*)l_data) + sizeof(SaHpiInventoryDataT) + 
-+					sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT));
+-        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)l_data + sizeof(SaHpiInventoryDataT) +
+-                                        sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT);
++        l_data->DataRecords[0] = (SaHpiInventDataRecordT *)(void*)(((char*)l_data) + sizeof(SaHpiInventoryDataT) +
++                                        sizeof(l_data->DataRecords[0])+  sizeof(SaHpiInventDataRecordT));
          l_data->DataRecords[1] = NULL;
  
          if(rdr != NULL) {
---- openhpi-0.5.0/src/plugins/ipmidirect/ipmi_log.cpp.orig	2004-01-26 08:29:00.000000000 +0000
-+++ openhpi-0.5.0/src/plugins/ipmidirect/ipmi_log.cpp	2004-02-22 16:06:31.000000000 +0000
+--- openhpi-0.6.0/plugins/ipmidirect/ipmi_log.cpp.orig	2004-01-26 08:29:00.000000000 +0000
++++ openhpi-0.6.0/plugins/ipmidirect/ipmi_log.cpp	2004-02-22 16:06:31.000000000 +0000
 @@ -181,7 +181,7 @@
  
-             gettimeofday( &tv, 0 );
+ 	    char b[dTimeStringSize+5];
              IpmiTimeToString( tv.tv_sec, b );
--            sprintf( b + dTimeStringSize - 1, ".%03ld ", tv.tv_usec / 1000 );
-+            sprintf( b + dTimeStringSize - 1, ".%03ld ", (long)(tv.tv_usec / 1000) );
-             strcat( b, buf );
-             write( log_fd, b, strlen( b ) );
-           }
+-	    sprintf( b + dTimeStringSize - 1, ".%03ld ", tv.tv_usec / 1000 );
++	    sprintf( b + dTimeStringSize - 1, ".%03ld ", (long)(tv.tv_usec / 1000) );
+ 
+ 	    Output( b );
+ 	  }
