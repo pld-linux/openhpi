@@ -220,3 +220,32 @@
         return -1;
  
    size += l;
+@@ -682,7 +682,7 @@
+        size += s;
+        b    += s;
+ 
+-       *tbp = (SaHpiTextBufferT *)data;
++       *tbp = (SaHpiTextBufferT *)(void*)data;
+ 
+        data += sizeof( SaHpiTextBufferT );
+        *data_size += sizeof( SaHpiTextBufferT );
+@@ -853,7 +853,7 @@
+      {
+        tUint32 data_size;
+ 
+-       id->DataRecords[i] = (SaHpiInventDataRecordT *)data_ptr;
++       id->DataRecords[i] = (SaHpiInventDataRecordT *)(void*)data_ptr;
+        s = SaHpiInventDataRecordDemarshaller( byte_order, id->DataRecords[i], b, &data_size );
+ 
+        if ( s < 0 )
+--- openhpi-1.0.0/plugins/ipmi/ipmi_controls.c.orig	2004-06-14 06:38:42.000000000 +0000
++++ openhpi-1.0.0/plugins/ipmi/ipmi_controls.c	2004-07-03 15:13:28.000000000 +0000
+@@ -111,7 +111,7 @@
+         }
+                         
+         ipmi_control_set_val(control, 
+-                             (int *)&info->state->StateUnion.Oem.Body[0],
++                             (int *)(void*)&info->state->StateUnion.Oem.Body[0],
+                              __set_control_state, info);
+ }
+ 

@@ -114,3 +114,23 @@
  
  	    Output( b );
  	  }
+--- openhpi-1.0.0/hpi_shell/hpi_cmd.c.orig	2004-06-28 22:06:50.000000000 +0000
++++ openhpi-1.0.0/hpi_shell/hpi_cmd.c	2004-07-03 16:00:27.000000000 +0000
+@@ -456,7 +456,7 @@
+    printf("Command> ");
+ 
+    rv = pthread_create(&discover_thread, NULL, sahpi_discover_thread,
+-		      (void *)sessionid);
++		      (void *)(size_t)sessionid);
+ 
+    if (rv)
+      printf("Error creating event thread\n");
+@@ -528,7 +528,7 @@
+ 	struct timeval to;
+ 
+ 	while (thread == 1) {
+-		rv = saHpiResourcesDiscover((SaHpiSessionIdT) sessionid);
++		rv = saHpiResourcesDiscover((SaHpiSessionIdT)(size_t)sessionid);
+ 		if (rv != SA_OK)
+ 			printf("discovery failed\n");
+ 
