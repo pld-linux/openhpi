@@ -2,14 +2,14 @@ Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implemen
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
 Version:	0.4
-Release:	1
+Release:	2
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
 # Source0-md5:	0ef94d2de5ae619d20cd8b72ccfa7003
 Patch0:		%{name}-snmp.patch
 URL:		http://openhpi.sourceforge.net/
-#BuildRequires:	OpenIPMI-devel >= 1.1.8
+BuildRequires:	OpenIPMI-devel >= 1.1.8
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake >= 1.5
 BuildRequires:	docbook-dtd41-sgml
@@ -128,9 +128,7 @@ done
 %{__aclocal}
 %{__autoconf}
 %{__automake}
-# ipmi requires unreleased OpenIPMI > 1.1.7 - disable for now
 %configure \
-	--disable-ipmi \
 	--with-glib=2.0.0
 	
 %{__make}
@@ -176,12 +174,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_libdir}/lib*.a
 
-%if 0
 %files plugin-ipmi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/libipmi.so*
 %{_libdir}/%{name}/libipmi.la
-%endif
 
 %files plugin-ipmidirect
 %defattr(644,root,root,755)
