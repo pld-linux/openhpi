@@ -1,34 +1,39 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	1.0.0
+Version:	2.0.0
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	44b858cf202bfabcf7968b216c615b2b
+# Source0-md5:	68c185cb4c6258cf81d1b80ed1e5452d
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-amfix.patch
 Patch2:		%{name}-sh.patch
-Patch3:		%{name}-glib.patch
-Patch4:		%{name}-align.patch
-Patch5:		%{name}-snmp.patch
+Patch3:		%{name}-align.patch
+Patch4:		%{name}-snmp.patch
+Patch5:		%{name}-ipmi.patch
 URL:		http://openhpi.sourceforge.net/
-BuildRequires:	OpenIPMI-devel >= 1.3.9
+BuildRequires:	OpenIPMI-devel >= 1.3.14
 BuildRequires:	autoconf >= 2.57
 BuildRequires:	automake >= 1.5
 BuildRequires:	docbook-dtd41-sgml
 BuildRequires:	docbook-utils
 BuildRequires:	fam-devel
 BuildRequires:	gcc >= 5:3.2.0
-BuildRequires:	glib2-devel >= 2.0.0
+BuildRequires:	glib2-devel >= 1:2.2.0
 BuildRequires:	libltdl-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
 BuildRequires:	libuuid-devel
 BuildRequires:	net-snmp-devel
+BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
 BuildRequires:	sysfsutils-devel >= 0.3.0
+Requires:	glib2 >= 1:2.2.0
+# temporary??? see configure and files comments
+Obsoletes:	openhpi-plugin-ipmidirect
+Obsoletes:	openhpi-plugin-simulator
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -154,7 +159,12 @@ done
 %{__autoheader}
 %{__automake}
 %configure \
-	--with-glib=2.0.0
+	--enable-daemon
+# broken or not updated to current internal API
+#	--enable-remote_client
+#	--enable-simulator
+#	--enable-ipmidirect
+#	--enable-snmp_client
 	
 %{__make}
 
@@ -177,18 +187,19 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc COPYING ChangeLog README docs/hld/openhpi-manual
+%doc COPYING README docs/hld/openhpi-manual
 %attr(755,root,root) %{_bindir}/*
-%attr(755,root,root) %{_libdir}/lib*.so.*.*
+%attr(755,root,root) %{_libdir}/lib*.so.*.*.*
 %dir %{_libdir}/%{name}
-%attr(755,root,root) %{_libdir}/%{name}/libdummy.so*
+%attr(755,root,root) %{_libdir}/%{name}/libdummy.so
 %{_libdir}/%{name}/libdummy.la
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
 %{_libdir}/%{name}/libwatchdog.la
-%attr(755,root,root) %{_libdir}/%{name}/libremote_client.so*
-%{_libdir}/%{name}/libremote_client.la
-%dir %{_sysconfdir}/openhpi
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/openhpi/openhpi.conf
+#%attr(755,root,root) %{_libdir}/%{name}/libremote_client.so*
+#%{_libdir}/%{name}/libremote_client.la
+#%dir %{_sysconfdir}/openhpi
+#%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/openhpi/openhpi.conf
+%dir %{_localstatedir}/lib/%{name}
 
 %files devel
 %defattr(644,root,root,755)
@@ -206,24 +217,22 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/libipmi.so*
 %{_libdir}/%{name}/libipmi.la
 
-%files plugin-ipmidirect
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/%{name}/libipmidirect.so*
-%{_libdir}/%{name}/libipmidirect.la
+#%files plugin-ipmidirect
+#%defattr(644,root,root,755)
+#%attr(755,root,root) %{_libdir}/%{name}/libipmidirect.so*
+#%{_libdir}/%{name}/libipmidirect.la
 
-%files plugin-simulator
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/%{name}/libsimulator.so*
-%{_libdir}/%{name}/libsimulator.la
+#%files plugin-simulator
+#%defattr(644,root,root,755)
+#%attr(755,root,root) %{_libdir}/%{name}/libsimulator.so*
+#%{_libdir}/%{name}/libsimulator.la
 
 %files plugin-snmp
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/libsnmp_bc.so*
 %{_libdir}/%{name}/libsnmp_bc.la
-%attr(755,root,root) %{_libdir}/%{name}/libsnmp_client.so*
-%{_libdir}/%{name}/libsnmp_client.la
-%attr(755,root,root) %{_libdir}/%{name}/libsnmp_rsa.so*
-%{_libdir}/%{name}/libsnmp_rsa.la
+#%attr(755,root,root) %{_libdir}/%{name}/libsnmp_client.so*
+#%{_libdir}/%{name}/libsnmp_client.la
 
 %files plugin-sysfs
 %defattr(644,root,root,755)
