@@ -1,12 +1,12 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	0.4
-Release:	2
+Version:	0.5.0
+Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	0ef94d2de5ae619d20cd8b72ccfa7003
+# Source0-md5:	d21ccfbadb181f562c8b425a4af0f33f
 Patch0:		%{name}-snmp.patch
 URL:		http://openhpi.sourceforge.net/
 BuildRequires:	OpenIPMI-devel >= 1.1.8
@@ -127,6 +127,7 @@ done
 %{__libtoolize}
 %{__aclocal}
 %{__autoconf}
+%{__autoheader}
 %{__automake}
 %configure \
 	--with-glib=2.0.0
@@ -158,6 +159,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/%{name}
 %attr(755,root,root) %{_libdir}/%{name}/libdummy.so*
 %{_libdir}/%{name}/libdummy.la
+%attr(755,root,root) %{_libdir}/%{name}/libsimulator.so*
+%{_libdir}/%{name}/libsimulator.la
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
 %{_libdir}/%{name}/libwatchdog.la
 %dir %{_sysconfdir}/openhpi
