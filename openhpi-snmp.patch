@@ -1,0 +1,104 @@
+--- openhpi-0.4/src/plugins/snmp_client/snmp_client.h.orig	2003-12-10 21:33:50.000000000 +0100
++++ openhpi-0.4/src/plugins/snmp_client/snmp_client.h	2003-12-12 20:35:27.163125536 +0100
+@@ -19,6 +19,23 @@
+ #include <net-snmp/net-snmp-config.h>
+ #include <net-snmp/net-snmp-includes.h>
+ 
++/* workaround for net-snmp-config.h vs our config.h conflict */
++#ifdef PACKAGE_BUGREPORT
++#  undef PACKAGE_BUGREPORT
++#endif
++#ifdef PACKAGE_NAME
++#  undef PACKAGE_NAME
++#endif
++#ifdef PACKAGE_STRING
++#  undef PACKAGE_STRING
++#endif
++#ifdef PACKAGE_TARNAME
++#  undef PACKAGE_TARNAME
++#endif
++#ifdef PACKAGE_VERSION
++#  undef PACKAGE_VERSION
++#endif
++
+ #include <SaHpi.h>
+ #include <openhpi.h>
+ #include <epath_utils.h>
+--- openhpi-0.4/src/plugins/snmp_bc/snmp_bc.h.orig	2003-12-05 23:09:46.000000000 +0100
++++ openhpi-0.4/src/plugins/snmp_bc/snmp_bc.h	2003-12-12 21:20:58.228940424 +0100
+@@ -19,6 +19,23 @@
+ #include <net-snmp/net-snmp-config.h>
+ #include <net-snmp/net-snmp-includes.h>
+ 
++/* workaround for net-snmp-config.h vs our config.h conflict */
++#ifdef PACKAGE_BUGREPORT
++#  undef PACKAGE_BUGREPORT
++#endif
++#ifdef PACKAGE_NAME
++#  undef PACKAGE_NAME
++#endif
++#ifdef PACKAGE_STRING
++#  undef PACKAGE_STRING
++#endif
++#ifdef PACKAGE_TARNAME
++#  undef PACKAGE_TARNAME
++#endif
++#ifdef PACKAGE_VERSION
++#  undef PACKAGE_VERSION
++#endif
++
+ #include <SaHpi.h>
+ #include <openhpi.h>
+ 
+--- openhpi-0.4/src/plugins/snmp_bc/snmp_bc_discover.h.orig	2003-12-09 21:55:40.000000000 +0100
++++ openhpi-0.4/src/plugins/snmp_bc/snmp_bc_discover.h	2003-12-12 21:29:36.473155328 +0100
+@@ -18,6 +18,23 @@
+ #define SNMP_BC_DISCOVER_H
+ #include <net-snmp/net-snmp-config.h>
+ #include <net-snmp/net-snmp-includes.h>
++/* workaround for net-snmp-config.h vs our config.h conflict */
++#ifdef PACKAGE_BUGREPORT
++#  undef PACKAGE_BUGREPORT
++#endif
++#ifdef PACKAGE_NAME
++#  undef PACKAGE_NAME
++#endif
++#ifdef PACKAGE_STRING
++#  undef PACKAGE_STRING
++#endif
++#ifdef PACKAGE_TARNAME
++#  undef PACKAGE_TARNAME
++#endif
++#ifdef PACKAGE_VERSION
++#  undef PACKAGE_VERSION
++#endif
++
+ #include <openhpi.h>
+ #include <bc_resources.h>
+ #include <snmp_bc.h>
+--- openhpi-0.4/src/plugins/snmp_bc/snmp_bc_sel.h.orig	2003-11-17 18:17:07.000000000 +0100
++++ openhpi-0.4/src/plugins/snmp_bc/snmp_bc_sel.h	2003-12-12 21:30:17.083981544 +0100
+@@ -21,6 +21,23 @@
+ #include <net-snmp/net-snmp-config.h>
+ #include <net-snmp/net-snmp-includes.h>
+ 
++/* workaround for net-snmp-config.h vs our config.h conflict */
++#ifdef PACKAGE_BUGREPORT
++#  undef PACKAGE_BUGREPORT
++#endif
++#ifdef PACKAGE_NAME
++#  undef PACKAGE_NAME
++#endif
++#ifdef PACKAGE_STRING
++#  undef PACKAGE_STRING
++#endif
++#ifdef PACKAGE_TARNAME
++#  undef PACKAGE_TARNAME
++#endif
++#ifdef PACKAGE_VERSION
++#  undef PACKAGE_VERSION
++#endif
++
+ #include <SaHpi.h>
+ #include <openhpi.h>
+ #include <time.h>
