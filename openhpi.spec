@@ -1,12 +1,12 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	0.9.0
-Release:	2.1
+Version:	1.0.0
+Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	d8860fdc91939d204eb6e48fc2214ae8
+# Source0-md5:	44b858cf202bfabcf7968b216c615b2b
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-amfix.patch
 Patch2:		%{name}-sh.patch
