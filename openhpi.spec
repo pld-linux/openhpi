@@ -1,18 +1,16 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.0.0
+Version:	2.0.2
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	68c185cb4c6258cf81d1b80ed1e5452d
+# Source0-md5:	8505513b0c7542f4e5d6287a99118123
 Patch0:		%{name}-types.patch
-Patch1:		%{name}-amfix.patch
-Patch2:		%{name}-sh.patch
-Patch3:		%{name}-align.patch
-Patch4:		%{name}-snmp.patch
-Patch5:		%{name}-ipmi.patch
+Patch1:		%{name}-sh.patch
+Patch2:		%{name}-align.patch
+Patch3:		%{name}-ipmi.patch
 URL:		http://openhpi.sourceforge.net/
 BuildRequires:	OpenIPMI-devel >= 1.3.14
 BuildRequires:	autoconf >= 2.57
@@ -32,7 +30,6 @@ BuildRequires:	pkgconfig
 BuildRequires:	sysfsutils-devel >= 0.3.0
 Requires:	glib2 >= 1:2.2.0
 # temporary??? see configure and files comments
-Obsoletes:	openhpi-plugin-ipmidirect
 Obsoletes:	openhpi-plugin-simulator
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -109,10 +106,10 @@ Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description plugin-snmp
-SNMP plugins for OpenHPI: snmp_bc and snmp_client.
+SNMP plugins for OpenHPI: snmp_bc.
 
 %description plugin-snmp -l pl
-Wtyczki SNMP dla OpenHPI: snmp_bc oraz snmp_client.
+Wtyczki SNMP dla OpenHPI: snmp_bc.
 
 %package plugin-simulator
 Summary:	simulator plugin for OpenHPI
@@ -144,8 +141,6 @@ Wtyczka sysfs dla OpenHPI.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%patch5 -p1
 
 # speed up build, lower disk space usage
 for f in `find . -name Makefile.am | xargs grep -l 'AM_CFLAGS.* -g '`; do
@@ -163,8 +158,6 @@ done
 # broken or not updated to current internal API
 #	--enable-remote_client
 #	--enable-simulator
-#	--enable-ipmidirect
-#	--enable-snmp_client
 	
 %{__make}
 
@@ -206,6 +199,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/lib*.so
 %{_libdir}/*.la
 %{_includedir}/%{name}
+%{_includedir}/hpi_cmd.h
 %{_pkgconfigdir}/*.pc
 
 %files static
@@ -217,10 +211,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/libipmi.so*
 %{_libdir}/%{name}/libipmi.la
 
-#%files plugin-ipmidirect
-#%defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/%{name}/libipmidirect.so*
-#%{_libdir}/%{name}/libipmidirect.la
+%files plugin-ipmidirect
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/%{name}/libipmidirect.so*
+%{_libdir}/%{name}/libipmidirect.la
 
 #%files plugin-simulator
 #%defattr(644,root,root,755)
@@ -231,8 +225,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/libsnmp_bc.so*
 %{_libdir}/%{name}/libsnmp_bc.la
-#%attr(755,root,root) %{_libdir}/%{name}/libsnmp_client.so*
-#%{_libdir}/%{name}/libsnmp_client.la
 
 %files plugin-sysfs
 %defattr(644,root,root,755)
