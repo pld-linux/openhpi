@@ -168,8 +168,13 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+ln -s %{name}/standard/libopenhpi.so.2.1.0 $RPM_BUILD_ROOT%{_libdir}
+ln -s %{name}/standard/libopenhpi.so $RPM_BUILD_ROOT%{_libdir}
+ln -s %{name}/standard/libopenhpi.la $RPM_BUILD_ROOT%{_libdir}
+ln -s %{name}/standard/libopenhpi.a $RPM_BUILD_ROOT%{_libdir}
+
 # remove useless static plugins (but *.la are used by lt_dlopen)
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}{,/client,/standard}/*.a
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/*.a
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -188,11 +193,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
 %{_libdir}/%{name}/libwatchdog.la
 %dir %{_libdir}/%{name}/client
-%attr(755,root,root) %{_libdir}/%{name}/client/libopenhpi.so*
-%{_libdir}/%{name}/client/libopenhpi.la
+%attr(755,root,root) %{_libdir}/%{name}/client/libopenhpi.so.*
 %dir %{_libdir}/%{name}/standard
-%attr(755,root,root) %{_libdir}/%{name}/standard/libopenhpi.so*
-%{_libdir}/%{name}/standard/libopenhpi.la
+%attr(755,root,root) %{_libdir}/%{name}/standard/libopenhpi.so.*
 #%attr(755,root,root) %{_libdir}/%{name}/libremote_client.so*
 #%{_libdir}/%{name}/libremote_client.la
 #%dir %{_sysconfdir}/openhpi
@@ -206,6 +209,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/lib*.so
 %{_libdir}/lib*.la
+%attr(755,root,root) %{_libdir}/%{name}/client/libopenhpi.so
+%{_libdir}/%{name}/client/libopenhpi.la
+%attr(755,root,root) %{_libdir}/%{name}/standard/libopenhpi.so
+%{_libdir}/%{name}/standard/libopenhpi.la
 %{_includedir}/%{name}
 %{_includedir}/hpi_cmd.h
 %{_pkgconfigdir}/*.pc
@@ -213,6 +220,8 @@ rm -rf $RPM_BUILD_ROOT
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/lib*.a
+%{_libdir}/%{name}/client/libopenhpi.a
+%{_libdir}/%{name}/standard/libopenhpi.a
 
 %files plugin-ipmi
 %defattr(644,root,root,755)
