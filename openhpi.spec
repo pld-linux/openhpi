@@ -1,18 +1,17 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.0.2
+Version:	2.1.0
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	8505513b0c7542f4e5d6287a99118123
+# Source0-md5:	4a3051c7048baa476018ca6f07f87928
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
-Patch3:		%{name}-ipmi.patch
 URL:		http://openhpi.sourceforge.net/
-BuildRequires:	OpenIPMI-devel >= 1.3.14
+BuildRequires:	OpenIPMI-devel >= 1.4.13
 BuildRequires:	autoconf >= 2.57
 BuildRequires:	automake >= 1.5
 BuildRequires:	docbook-dtd41-sgml
@@ -54,7 +53,7 @@ Summary:	Development part of OpenHPI Toolkit library
 Summary(pl):	Programistyczna czê¶æ biblioteki OpenHPI
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	glib2-devel >= 2.0.0
+Requires:	glib2-devel >= 1:2.2.0
 Requires:	libltdl-devel
 
 %description devel
@@ -80,6 +79,7 @@ Summary:	ipmi plugin for OpenHPI
 Summary(pl):	Wtyczka ipmi dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	OpenIPMI >= 1.4.13
 
 %description plugin-ipmi
 ipmi plugin for OpenHPI.
@@ -140,7 +140,6 @@ Wtyczka sysfs dla OpenHPI.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 # speed up build, lower disk space usage
 for f in `find . -name Makefile.am | xargs grep -l 'AM_CFLAGS.* -g '`; do
@@ -170,7 +169,7 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 # remove useless static plugins (but *.la are used by lt_dlopen)
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/*.a
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}{,/client,/standard}/*.a
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -188,16 +187,25 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/libdummy.la
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
 %{_libdir}/%{name}/libwatchdog.la
+%dir %{_libdir}/%{name}/client
+%attr(755,root,root) %{_libdir}/%{name}/client/libopenhpi.so*
+%{_libdir}/%{name}/client/libopenhpi.la
+%dir %{_libdir}/%{name}/standard
+%attr(755,root,root) %{_libdir}/%{name}/standard/libopenhpi.so*
+%{_libdir}/%{name}/standard/libopenhpi.la
 #%attr(755,root,root) %{_libdir}/%{name}/libremote_client.so*
 #%{_libdir}/%{name}/libremote_client.la
 #%dir %{_sysconfdir}/openhpi
 #%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/openhpi/openhpi.conf
+#%attr(754,root,root) /etc/rc.d/init.d/openhpid
 %dir %{_localstatedir}/lib/%{name}
+%{_mandir}/man1/openhpi-switcher.1*
+%{_mandir}/man7/openhpi.7*
 
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/lib*.so
-%{_libdir}/*.la
+%{_libdir}/lib*.la
 %{_includedir}/%{name}
 %{_includedir}/hpi_cmd.h
 %{_pkgconfigdir}/*.pc
