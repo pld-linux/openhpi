@@ -1,12 +1,12 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.1.0
+Version:	2.1.1
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	4a3051c7048baa476018ca6f07f87928
+# Source0-md5:	885270b848b2364d5dce075c4f3c7a92
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
@@ -28,8 +28,6 @@ BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
 BuildRequires:	sysfsutils-devel >= 0.3.0
 Requires:	glib2 >= 1:2.2.0
-# temporary??? see configure and files comments
-Obsoletes:	openhpi-plugin-simulator
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -153,10 +151,10 @@ done
 %{__autoheader}
 %{__automake}
 %configure \
-	--enable-daemon
-# broken or not updated to current internal API
+	--enable-daemon \
+	--enable-simulator
+# removed?
 #	--enable-remote_client
-#	--enable-simulator
 	
 %{__make}
 
@@ -198,8 +196,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/standard/libopenhpi.so.*
 #%attr(755,root,root) %{_libdir}/%{name}/libremote_client.so*
 #%{_libdir}/%{name}/libremote_client.la
-#%dir %{_sysconfdir}/openhpi
-#%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/openhpi/openhpi.conf
+%dir %{_sysconfdir}/openhpi
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/openhpi/openhpi.conf
 #%attr(754,root,root) /etc/rc.d/init.d/openhpid
 %dir %{_localstatedir}/lib/%{name}
 %{_mandir}/man1/openhpi-switcher.1*
@@ -233,10 +231,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/libipmidirect.so*
 %{_libdir}/%{name}/libipmidirect.la
 
-#%files plugin-simulator
-#%defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/%{name}/libsimulator.so*
-#%{_libdir}/%{name}/libsimulator.la
+%files plugin-simulator
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/%{name}/libsimulator.so*
+%{_libdir}/%{name}/libsimulator.la
 
 %files plugin-snmp
 %defattr(644,root,root,755)
