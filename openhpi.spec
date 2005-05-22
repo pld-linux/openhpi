@@ -2,7 +2,7 @@ Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implemen
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
 Version:	2.1.1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
@@ -10,6 +10,7 @@ Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
+Patch3:		%{name}-headers.patch
 URL:		http://openhpi.sourceforge.net/
 BuildRequires:	OpenIPMI-devel >= 1.4.13
 BuildRequires:	autoconf >= 2.57
@@ -138,6 +139,7 @@ Wtyczka sysfs dla OpenHPI.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 # speed up build, lower disk space usage
 for f in `find . -name Makefile.am | xargs grep -l 'AM_CFLAGS.* -g '`; do
