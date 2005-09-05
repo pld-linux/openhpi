@@ -1,20 +1,20 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.1.1
-Release:	2
+Version:	2.1.2
+Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	885270b848b2364d5dce075c4f3c7a92
+# Source0-md5:	dabb07430f22bb5a795c507a9b0cca50
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
-Patch3:		%{name}-headers.patch
+Patch3:		%{name}-proto.patch
 URL:		http://openhpi.sourceforge.net/
-BuildRequires:	OpenIPMI-devel >= 1.4.13
+BuildRequires:	OpenIPMI-devel >= 1.4.16
 BuildRequires:	autoconf >= 2.57
-BuildRequires:	automake >= 1.5
+BuildRequires:	automake >= 1.8
 BuildRequires:	docbook-dtd41-sgml
 BuildRequires:	docbook-utils
 BuildRequires:	fam-devel
@@ -78,7 +78,7 @@ Summary:	ipmi plugin for OpenHPI
 Summary(pl):	Wtyczka ipmi dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	OpenIPMI >= 1.4.13
+Requires:	OpenIPMI >= 1.4.16
 
 %description plugin-ipmi
 ipmi plugin for OpenHPI.
@@ -168,10 +168,11 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-ln -s %{name}/standard/libopenhpi.so.2.1.0 $RPM_BUILD_ROOT%{_libdir}
-ln -s %{name}/standard/libopenhpi.so $RPM_BUILD_ROOT%{_libdir}
-ln -s %{name}/standard/libopenhpi.la $RPM_BUILD_ROOT%{_libdir}
-ln -s %{name}/standard/libopenhpi.a $RPM_BUILD_ROOT%{_libdir}
+ln -sf %{name}/standard/libopenhpi.so.2.1.2 $RPM_BUILD_ROOT%{_libdir}
+ln -sf %{name}/standard/libopenhpi.so.2 $RPM_BUILD_ROOT%{_libdir}
+ln -sf %{name}/standard/libopenhpi.so $RPM_BUILD_ROOT%{_libdir}
+ln -sf %{name}/standard/libopenhpi.la $RPM_BUILD_ROOT%{_libdir}
+ln -sf %{name}/standard/libopenhpi.a $RPM_BUILD_ROOT%{_libdir}
 
 # remove useless static plugins (but *.la are used by lt_dlopen)
 rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/*.a
@@ -214,7 +215,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/%{name}/standard/libopenhpi.so
 %{_libdir}/%{name}/standard/libopenhpi.la
 %{_includedir}/%{name}
-%{_includedir}/hpi_cmd.h
 %{_pkgconfigdir}/*.pc
 
 %files static
