@@ -180,14 +180,14 @@
              }
  
              return sizeof( tFloat64 );
---- openhpi-1.0.0/plugins/ipmi/ipmi_controls.c.orig	2004-06-14 06:38:42.000000000 +0000
-+++ openhpi-1.0.0/plugins/ipmi/ipmi_controls.c	2004-07-03 15:13:28.000000000 +0000
-@@ -111,7 +111,7 @@
-         }
-                         
-         ipmi_control_set_val(control, 
+--- openhpi-2.1.2/plugins/ipmi/ipmi_controls.c.orig	2005-06-07 23:57:22.000000000 +0200
++++ openhpi-2.1.2/plugins/ipmi/ipmi_controls.c	2005-09-04 21:43:40.019711256 +0200
+@@ -213,7 +213,7 @@
+ 		ipmi_free_light_settings(setting);
+ 	} else {
+         	ipmi_control_set_val(control, 
 -                             (int *)&info->state->StateUnion.Oem.Body[0],
 +                             (int *)(void*)&info->state->StateUnion.Oem.Body[0],
                               __set_control_state, info);
+ 	}
  }
- 
