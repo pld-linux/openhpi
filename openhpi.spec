@@ -1,12 +1,12 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.1.2
+Version:	2.2.0
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	dabb07430f22bb5a795c507a9b0cca50
+# Source0-md5:	785595ba927b49bbeee789bf063a7969
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
@@ -168,7 +168,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-ln -sf %{name}/standard/libopenhpi.so.2.1.2 $RPM_BUILD_ROOT%{_libdir}
+ln -sf %{name}/standard/libopenhpi.so.2.2.0 $RPM_BUILD_ROOT%{_libdir}
 ln -sf %{name}/standard/libopenhpi.so.2 $RPM_BUILD_ROOT%{_libdir}
 ln -sf %{name}/standard/libopenhpi.so $RPM_BUILD_ROOT%{_libdir}
 ln -sf %{name}/standard/libopenhpi.la $RPM_BUILD_ROOT%{_libdir}
