@@ -1,6 +1,6 @@
---- openhpi-0.9.0/marshal/marshal.c~	Wed Jun 16 19:50:24 2004
-+++ openhpi-0.9.0/marshal/marshal.c	Wed Jun 16 19:54:27 2004
-@@ -19,6 +19,7 @@
+--- openhpi-2.2.1/marshal/marshal.c.orig	2005-09-27 12:19:54.000000000 +0200
++++ openhpi-2.2.1/marshal/marshal.c	2005-10-30 18:14:44.051581512 +0100
+@@ -20,6 +20,7 @@
  #include <assert.h>
  #include <endian.h>
  #include <byteswap.h>
@@ -8,7 +8,7 @@
  #include "marshal.h"
  
  
-@@ -270,8 +271,7 @@
+@@ -279,8 +280,7 @@
         case eMtInt16:
         case eMtUint16:
              {
@@ -18,7 +18,7 @@
              }
  
              return sizeof( tUint16 );
-@@ -279,8 +279,7 @@
+@@ -288,8 +288,7 @@
         case eMtUint32:
         case eMtInt32:
              {
@@ -28,7 +28,7 @@
              }
  
              return sizeof( tUint32 );
-@@ -288,24 +287,21 @@
+@@ -297,24 +296,21 @@
         case eMtUint64:
         case eMtInt64:
              {
@@ -56,11 +56,13 @@
              }
  
              return sizeof( tFloat64 );
-@@ -339,12 +335,16 @@
+@@ -347,16 +343,16 @@
  
         case eMtUint16:
         case eMtInt16:
--	    m = (tUint32)*(const tUint16 *)so;
+-	/* compile error */
+-//	    m = (tUint32)*(const tUint16 *)so;
+-	    m = (tUint32)(*(const tUint16 *)(const void *)so);
 +	    {
 +	    tUint16 buf;
 +	    memcpy(&buf, so, sizeof(tUint16));
@@ -70,16 +72,20 @@
  
         case eMtUint32:
         case eMtInt32:
--	    m = *(const tUint32 *)so;
+-	/* compile error */
+-//	    m = *(const tUint32 *)so;
+-	    m = *(const tUint32 *)(const void *)so;
 +	    memcpy(&m, so, sizeof(tUint32));
  	    break;
  
         default:
-@@ -383,12 +383,16 @@
+@@ -395,16 +391,16 @@
  
         case eMtUint16:
         case eMtInt16:
--	    size = (tUint32)*(const tUint16 *)so;
+-	/* compile error */
+-//	    size = (tUint32)*(const tUint16 *)so;
+-	    size = (tUint32)*(const tUint16 *)(const void *)so;
 +	    {
 +	    tUint16 buf;
 +	    memcpy(&buf, so, sizeof(tUint16));
@@ -89,12 +95,14 @@
  
         case eMtUint32:
         case eMtInt32:
--	    size = *(const tUint32 *)so;
+-	/* compile error */
+-//	    size = *(const tUint32 *)so;
+-	    size = *(const tUint32 *)(const void *)so;
 +	    memcpy(&size, so, sizeof(tUint32));
  	    break;
  
         default:
-@@ -583,12 +587,13 @@
+@@ -612,12 +608,13 @@
         case eMtInt16:
         case eMtUint16:
              {
@@ -110,7 +118,7 @@
              }            
  
              return sizeof( tUint16 );
-@@ -596,12 +601,13 @@
+@@ -625,12 +622,13 @@
         case eMtUint32:
         case eMtInt32:
              {
@@ -126,7 +134,7 @@
              }
  
              return sizeof( tUint32 );
-@@ -609,12 +615,13 @@
+@@ -638,12 +636,13 @@
         case eMtUint64:
         case eMtInt64:
              {
@@ -142,7 +150,7 @@
              }
  
              return sizeof( tUint64 );
-@@ -622,13 +629,16 @@
+@@ -651,13 +650,16 @@
         case eMtFloat32:
              {
                // this has been tested for i386 and PPC
@@ -161,7 +169,7 @@
              }
  
              return sizeof( tFloat32 );
-@@ -636,13 +646,16 @@
+@@ -665,13 +667,16 @@
         case eMtFloat64:
              {
                // this has been tested for i386 and PPC
@@ -180,14 +188,3 @@
              }
  
              return sizeof( tFloat64 );
---- openhpi-2.1.2/plugins/ipmi/ipmi_controls.c.orig	2005-06-07 23:57:22.000000000 +0200
-+++ openhpi-2.1.2/plugins/ipmi/ipmi_controls.c	2005-09-04 21:43:40.019711256 +0200
-@@ -213,7 +213,7 @@
- 		ipmi_free_light_settings(setting);
- 	} else {
-         	ipmi_control_set_val(control, 
--                             (int *)&info->state->StateUnion.Oem.Body[0],
-+                             (int *)(void*)&info->state->StateUnion.Oem.Body[0],
-                              __set_control_state, info);
- 	}
- }
