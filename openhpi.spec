@@ -1,12 +1,12 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.2.1
+Version:	2.3.0
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	d1c914dcc3fb482cb58299fec377f7b4
+# Source0-md5:	b6d96aa0475f5fcbcf1340969901c9ef
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
@@ -154,6 +154,7 @@ done
 %{__automake}
 %configure \
 	--enable-daemon \
+	--enable-dummy \
 	--enable-simulator
 # removed?
 #	--enable-remote_client
