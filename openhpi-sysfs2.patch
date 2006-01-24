@@ -1,0 +1,76 @@
+--- openhpi-2.3.1/plugins/sysfs/sysfs2hpi.c.orig	2005-10-27 05:00:47.000000000 +0200
++++ openhpi-2.3.1/plugins/sysfs/sysfs2hpi.c	2006-01-24 19:41:23.444302750 +0100
+@@ -636,7 +636,7 @@
+ 					SaHpiEventStateT *state)
+ {
+ 	struct sensor *s;
+-	char tmp[SCRATCHSIZE];
++	struct sysfs_attribute *tmpattr;
+ 	struct oh_handler_state *inst = (struct oh_handler_state *)hnd;
+         SaHpiRdrT *tmprdr;
+ 
+@@ -673,12 +673,19 @@
+ 
+ 	*state = 0x0000;
+ 
+-	if (sysfs_read_attribute_value(s->value->path,tmp,SCRATCHSIZE)) {
++	if ((tmpattr = sysfs_open_attribute(s->value->path)) == NULL) {
+ 		dbg("error attempting to read value of %s",s->name);
+ 		return SA_ERR_HPI_INVALID_DATA;
+ 	}
++	
++	if (sysfs_read_attribute(tmpattr)) {
++		dbg("error attempting to read value of %s",s->name);
++		sysfs_close_attribute(tmpattr);
++		return SA_ERR_HPI_INVALID_DATA;
++	}
+ 
+-        reading_int64_set(reading, atoi(tmp));
++        reading_int64_set(reading, atoi(tmpattr->value));
++	sysfs_close_attribute(tmpattr);
+ 	
+ 	return 0;
+ }
+@@ -708,7 +715,7 @@
+ 					   	SaHpiSensorThresholdsT *thres)
+ {
+ 	struct sensor *s;
+-	char tmp[SCRATCHSIZE];
++	struct sysfs_attribute *tmpattr;
+ 	struct oh_handler_state *inst = (struct oh_handler_state *)hnd;
+ 	SaHpiRdrT *tmprdr;
+ 
+@@ -746,17 +753,29 @@
+ 	 * Setting ValuesPresent for all other items to 0.
+ 	 */
+ 	/* get min values */
+-        if (sysfs_read_attribute_value(s->min->path,tmp,SCRATCHSIZE)) {
++        if ((tmpattr = sysfs_open_attribute(s->min->path)) == NULL) {
++                dbg("error attempting to read value of %s",s->name);
++                return SA_ERR_HPI_INVALID_DATA;
++        }
++        if (sysfs_read_attribute(tmpattr)) {
+                 dbg("error attempting to read value of %s",s->name);
++		sysfs_close_attribute(tmpattr);
+                 return SA_ERR_HPI_INVALID_DATA;
+         }
+-        reading_int64_set(&thres->LowCritical, atoi(tmp));
++        reading_int64_set(&thres->LowCritical, atoi(tmpattr->value));
++	sysfs_close_attribute(tmpattr);
+ 
+-        if (sysfs_read_attribute_value(s->max->path,tmp,SCRATCHSIZE)) {
++        if ((tmpattr = sysfs_open_attribute(s->max->path)) == NULL) {
++                dbg("error attempting to read value of %s",s->name);
++                return SA_ERR_HPI_INVALID_DATA;
++        }
++        if (sysfs_read_attribute(tmpattr)) {
+                 dbg("error attempting to read value of %s",s->name);
++		sysfs_close_attribute(tmpattr);
+                 return SA_ERR_HPI_INVALID_DATA;
+         }
+-        reading_int64_set(&thres->UpCritical, atoi(tmp));
++        reading_int64_set(&thres->UpCritical, atoi(tmpattr->value));
++	sysfs_close_attribute(tmpattr);
+ 
+         thres->LowMajor.IsSupported = SAHPI_FALSE;
+         thres->LowMinor.IsSupported = SAHPI_FALSE;
