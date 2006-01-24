@@ -1,16 +1,17 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.3.0
+Version:	2.3.1
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	b6d96aa0475f5fcbcf1340969901c9ef
+# Source0-md5:	2b0d4c4c5090958d5ccd72a44a657b59
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
 Patch3:		%{name}-proto.patch
+Patch4:		%{name}-sysfs2.patch
 URL:		http://openhpi.sourceforge.net/
 BuildRequires:	OpenIPMI-devel >= 1.4.16
 BuildRequires:	autoconf >= 2.57
@@ -30,6 +31,8 @@ BuildRequires:	pkgconfig
 BuildRequires:	sysfsutils-devel >= 0.3.0
 Requires:	glib2 >= 1:2.2.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		specflags	-fno-strict-aliasing
 
 %description
 OpenHPI is an open source project created with the intent of providing
@@ -140,6 +143,7 @@ Wtyczka sysfs dla OpenHPI.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 # speed up build, lower disk space usage
 for f in `find . -name Makefile.am | xargs grep -l 'AM_CFLAGS.* -g '`; do
@@ -168,12 +172,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-
-ln -sf %{name}/standard/libopenhpi.so.2.2.1 $RPM_BUILD_ROOT%{_libdir}
-ln -sf %{name}/standard/libopenhpi.so.2 $RPM_BUILD_ROOT%{_libdir}
-ln -sf %{name}/standard/libopenhpi.so $RPM_BUILD_ROOT%{_libdir}
-ln -sf %{name}/standard/libopenhpi.la $RPM_BUILD_ROOT%{_libdir}
-ln -sf %{name}/standard/libopenhpi.a $RPM_BUILD_ROOT%{_libdir}
 
 # remove useless static plugins (but *.la are used by lt_dlopen)
 rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/*.a
