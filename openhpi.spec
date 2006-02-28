@@ -46,7 +46,7 @@ virtualization and simulation.
 OpenHPI to otwarty projekt stworzony z zamiarem dostarczenia
 implementacji HPI (Hardware Platform Interface - interfejsu platformy
 sprzêtowej) Service Availability Forum. HPI udostêpnia uniwersalny
-interfejs do tworzenia modeli systemów zasobów, zwykle dla serwerów 
+interfejs do tworzenia modeli systemów zasobów, zwykle dla serwerów
 w ramach i szafach, ale rozszerzalny dla innego rodzaju problemów,
 takich jak klastrowanie, wirtualizacja czy symulacja.
 
@@ -162,7 +162,7 @@ done
 	--enable-simulator
 # removed?
 #	--enable-remote_client
-	
+
 %{__make}
 
 %{__make} -C docs/hld openhpi-manual/book1.html
