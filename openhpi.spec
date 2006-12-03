@@ -1,21 +1,24 @@
+# TODO:
+# - rtas (R: librtas, http://librtas.ozlabs.org/)
+# - C++ wrappers (needs patching, at least "extra qualification" errors)
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.3.1
+Version:	2.7.2
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	2b0d4c4c5090958d5ccd72a44a657b59
+# Source0-md5:	0d980f24efde840412a68c987bd7d909
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
 Patch3:		%{name}-proto.patch
 Patch4:		%{name}-sysfs2.patch
 URL:		http://openhpi.sourceforge.net/
-BuildRequires:	OpenIPMI-devel >= 1.4.16
+BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
-BuildRequires:	automake >= 1.8
+BuildRequires:	automake >= 1:1.8
 BuildRequires:	docbook-dtd41-sgml
 BuildRequires:	docbook-utils
 BuildRequires:	fam-devel
@@ -28,7 +31,7 @@ BuildRequires:	libuuid-devel
 BuildRequires:	net-snmp-devel
 BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
-BuildRequires:	sysfsutils-devel >= 0.3.0
+BuildRequires:	sysfsutils-devel >= 1.3.0-3
 Requires:	glib2 >= 1:2.2.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -81,7 +84,7 @@ Summary:	ipmi plugin for OpenHPI
 Summary(pl):	Wtyczka ipmi dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	OpenIPMI >= 1.4.16
+Requires:	OpenIPMI >= 1.4.20
 
 %description plugin-ipmi
 ipmi plugin for OpenHPI.
@@ -160,8 +163,6 @@ done
 	--enable-daemon \
 	--enable-dummy \
 	--enable-simulator
-# removed?
-#	--enable-remote_client
 
 %{__make}
 
@@ -186,41 +187,27 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc COPYING README docs/hld/openhpi-manual
 %attr(755,root,root) %{_bindir}/*
+%attr(755,root,root) %{_sbindir}/openhpid
 %attr(755,root,root) %{_libdir}/lib*.so.*.*.*
 %dir %{_libdir}/%{name}
-%attr(755,root,root) %{_libdir}/%{name}/libdummy.so
-%{_libdir}/%{name}/libdummy.la
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
 %{_libdir}/%{name}/libwatchdog.la
-%dir %{_libdir}/%{name}/client
-%attr(755,root,root) %{_libdir}/%{name}/client/libopenhpi.so.*
-%dir %{_libdir}/%{name}/standard
-%attr(755,root,root) %{_libdir}/%{name}/standard/libopenhpi.so.*
-#%attr(755,root,root) %{_libdir}/%{name}/libremote_client.so*
-#%{_libdir}/%{name}/libremote_client.la
 %dir %{_sysconfdir}/openhpi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/openhpi/openhpi.conf
 #%attr(754,root,root) /etc/rc.d/init.d/openhpid
 %dir %{_localstatedir}/lib/%{name}
-%{_mandir}/man1/openhpi-switcher.1*
 %{_mandir}/man7/openhpi.7*
 
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/lib*.so
 %{_libdir}/lib*.la
-%attr(755,root,root) %{_libdir}/%{name}/client/libopenhpi.so
-%{_libdir}/%{name}/client/libopenhpi.la
-%attr(755,root,root) %{_libdir}/%{name}/standard/libopenhpi.so
-%{_libdir}/%{name}/standard/libopenhpi.la
 %{_includedir}/%{name}
 %{_pkgconfigdir}/*.pc
 
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/lib*.a
-%{_libdir}/%{name}/client/libopenhpi.a
-%{_libdir}/%{name}/standard/libopenhpi.a
 
 %files plugin-ipmi
 %defattr(644,root,root,755)
