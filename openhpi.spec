@@ -1,5 +1,5 @@
 # TODO:
-# - rtas (R: librtas, http://librtas.ozlabs.org/)
+# - rtas (BR: librtas) on ppc/ppc64
 # - C++ wrappers (needs patching, at least "extra qualification" errors)
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
