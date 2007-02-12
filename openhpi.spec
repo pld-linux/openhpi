@@ -2,7 +2,7 @@
 # - rtas (BR: librtas) on ppc/ppc64
 # - C++ wrappers (needs patching, at least "extra qualification" errors)
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
-Summary(pl):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
+Summary(pl.UTF-8):   Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
 Version:	2.7.2
 Release:	1
@@ -45,17 +45,17 @@ creating resource system models, typically for chassis and rack based
 servers, but extendable for other problem domains such as clustering,
 virtualization and simulation.
 
-%description -l pl
+%description -l pl.UTF-8
 OpenHPI to otwarty projekt stworzony z zamiarem dostarczenia
 implementacji HPI (Hardware Platform Interface - interfejsu platformy
-sprzêtowej) Service Availability Forum. HPI udostêpnia uniwersalny
-interfejs do tworzenia modeli systemów zasobów, zwykle dla serwerów
-w ramach i szafach, ale rozszerzalny dla innego rodzaju problemów,
+sprzÄ™towej) Service Availability Forum. HPI udostÄ™pnia uniwersalny
+interfejs do tworzenia modeli systemÃ³w zasobÃ³w, zwykle dla serwerÃ³w
+w ramach i szafach, ale rozszerzalny dla innego rodzaju problemÃ³w,
 takich jak klastrowanie, wirtualizacja czy symulacja.
 
 %package devel
 Summary:	Development part of OpenHPI Toolkit library
-Summary(pl):	Programistyczna czê¶æ biblioteki OpenHPI
+Summary(pl.UTF-8):   Programistyczna czÄ™Å›Ä‡ biblioteki OpenHPI
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	glib2-devel >= 1:2.2.0
@@ -64,24 +64,24 @@ Requires:	libltdl-devel
 %description devel
 Development part of OpenHPI library.
 
-%description devel -l pl
-Programistyczna czê¶æ biblioteki OpenHPI.
+%description devel -l pl.UTF-8
+Programistyczna czÄ™Å›Ä‡ biblioteki OpenHPI.
 
 %package static
 Summary:	Static OpenHPI library
-Summary(pl):	Statyczna biblioteka OpenHPI
+Summary(pl.UTF-8):   Statyczna biblioteka OpenHPI
 Group:		Development/Libraries
 Requires:	%{name}-devel = %{version}-%{release}
 
 %description static
 Static OpenHPI Toolkit libraries.
 
-%description static -l pl
+%description static -l pl.UTF-8
 Statyczna biblioteka OpenHPI.
 
 %package plugin-ipmi
 Summary:	ipmi plugin for OpenHPI
-Summary(pl):	Wtyczka ipmi dla OpenHPI
+Summary(pl.UTF-8):   Wtyczka ipmi dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	OpenIPMI >= 1.4.20
@@ -89,55 +89,55 @@ Requires:	OpenIPMI >= 1.4.20
 %description plugin-ipmi
 ipmi plugin for OpenHPI.
 
-%description plugin-ipmi -l pl
+%description plugin-ipmi -l pl.UTF-8
 Wtyczka ipmi dla OpenHPI.
 
 %package plugin-ipmidirect
 Summary:	ipmidirect plugin for OpenHPI
-Summary(pl):	Wtyczka ipmidirect dla OpenHPI
+Summary(pl.UTF-8):   Wtyczka ipmidirect dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description plugin-ipmidirect
 ipmidirect plugin for OpenHPI.
 
-%description plugin-ipmidirect -l pl
+%description plugin-ipmidirect -l pl.UTF-8
 Wtyczka ipmidirect dla OpenHPI.
 
 %package plugin-snmp
 Summary:	SNMP plugins for OpenHPI
-Summary(pl):	Wtyczki SNMP dla OpenHPI
+Summary(pl.UTF-8):   Wtyczki SNMP dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description plugin-snmp
 SNMP plugins for OpenHPI: snmp_bc.
 
-%description plugin-snmp -l pl
+%description plugin-snmp -l pl.UTF-8
 Wtyczki SNMP dla OpenHPI: snmp_bc.
 
 %package plugin-simulator
 Summary:	simulator plugin for OpenHPI
-Summary(pl):	Wtyczka simulator dla OpenHPI
+Summary(pl.UTF-8):   Wtyczka simulator dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description plugin-simulator
 simulator plugin for OpenHPI.
 
-%description plugin-simulator -l pl
+%description plugin-simulator -l pl.UTF-8
 Wtyczka simulator dla OpenHPI.
 
 %package plugin-sysfs
 Summary:	sysfs plugin for OpenHPI
-Summary(pl):	Wtyczka sysfs dla OpenHPI
+Summary(pl.UTF-8):   Wtyczka sysfs dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description plugin-sysfs
 sysfs plugin for OpenHPI.
 
-%description plugin-sysfs -l pl
+%description plugin-sysfs -l pl.UTF-8
 Wtyczka sysfs dla OpenHPI.
 
 %prep
