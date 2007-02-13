@@ -2,7 +2,7 @@
 # - rtas (BR: librtas) on ppc/ppc64
 # - C++ wrappers (needs patching, at least "extra qualification" errors)
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
-Summary(pl.UTF-8):   Implementacja HPI (Hardware Platform Interface) Service Availability Forum
+Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
 Version:	2.7.2
 Release:	1
@@ -55,7 +55,7 @@ takich jak klastrowanie, wirtualizacja czy symulacja.
 
 %package devel
 Summary:	Development part of OpenHPI Toolkit library
-Summary(pl.UTF-8):   Programistyczna część biblioteki OpenHPI
+Summary(pl.UTF-8):	Programistyczna część biblioteki OpenHPI
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	glib2-devel >= 1:2.2.0
@@ -69,7 +69,7 @@ Programistyczna część biblioteki OpenHPI.
 
 %package static
 Summary:	Static OpenHPI library
-Summary(pl.UTF-8):   Statyczna biblioteka OpenHPI
+Summary(pl.UTF-8):	Statyczna biblioteka OpenHPI
 Group:		Development/Libraries
 Requires:	%{name}-devel = %{version}-%{release}
 
@@ -81,7 +81,7 @@ Statyczna biblioteka OpenHPI.
 
 %package plugin-ipmi
 Summary:	ipmi plugin for OpenHPI
-Summary(pl.UTF-8):   Wtyczka ipmi dla OpenHPI
+Summary(pl.UTF-8):	Wtyczka ipmi dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	OpenIPMI >= 1.4.20
@@ -94,7 +94,7 @@ Wtyczka ipmi dla OpenHPI.
 
 %package plugin-ipmidirect
 Summary:	ipmidirect plugin for OpenHPI
-Summary(pl.UTF-8):   Wtyczka ipmidirect dla OpenHPI
+Summary(pl.UTF-8):	Wtyczka ipmidirect dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
@@ -106,7 +106,7 @@ Wtyczka ipmidirect dla OpenHPI.
 
 %package plugin-snmp
 Summary:	SNMP plugins for OpenHPI
-Summary(pl.UTF-8):   Wtyczki SNMP dla OpenHPI
+Summary(pl.UTF-8):	Wtyczki SNMP dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
@@ -118,7 +118,7 @@ Wtyczki SNMP dla OpenHPI: snmp_bc.
 
 %package plugin-simulator
 Summary:	simulator plugin for OpenHPI
-Summary(pl.UTF-8):   Wtyczka simulator dla OpenHPI
+Summary(pl.UTF-8):	Wtyczka simulator dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
@@ -130,7 +130,7 @@ Wtyczka simulator dla OpenHPI.
 
 %package plugin-sysfs
 Summary:	sysfs plugin for OpenHPI
-Summary(pl.UTF-8):   Wtyczka sysfs dla OpenHPI
+Summary(pl.UTF-8):	Wtyczka sysfs dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
