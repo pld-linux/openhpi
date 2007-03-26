@@ -15,6 +15,7 @@ Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
 Patch3:		%{name}-proto.patch
 Patch4:		%{name}-sysfs2.patch
+Patch5:		%{name}-configure.patch
 URL:		http://openhpi.sourceforge.net/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
@@ -147,6 +148,7 @@ Wtyczka sysfs dla OpenHPI.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 # speed up build, lower disk space usage
 for f in `find . -name Makefile.am | xargs grep -l 'AM_CFLAGS.* -g '`; do
