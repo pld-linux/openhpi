@@ -1,62 +1,6 @@
---- openhpi-2.2.1/marshal/marshal.c.orig	2005-09-27 12:19:54.000000000 +0200
-+++ openhpi-2.2.1/marshal/marshal.c	2005-10-30 18:14:44.051581512 +0100
-@@ -20,6 +20,7 @@
- #include <assert.h>
- #include <endian.h>
- #include <byteswap.h>
-+#include <string.h>
- #include "marshal.h"
- 
- 
-@@ -279,8 +280,7 @@
-        case eMtInt16:
-        case eMtUint16:
-             {
--              tUint16 v = *(const tUint16 *)data;
--              *(tUint16 *)buffer = v;
-+              memcpy(buffer, data, sizeof(tUint16));
-             }
- 
-             return sizeof( tUint16 );
-@@ -288,8 +288,7 @@
-        case eMtUint32:
-        case eMtInt32:
-             {
--              tUint32 v = *(const tUint32 *)data;
--              *(tUint32 *)buffer = v;
-+              memcpy(buffer, data, sizeof(tUint32));
-             }
- 
-             return sizeof( tUint32 );
-@@ -297,24 +296,21 @@
-        case eMtUint64:
-        case eMtInt64:
-             {
--              tUint64 v = *(const tUint64 *)data;
--              *(tUint64 *)buffer = v;
-+              memcpy(buffer, data, sizeof(tUint64));
-             }
- 
-             return sizeof( tUint64 );
- 
-        case eMtFloat32:
-             {
--              tFloat32 v = *(const tFloat32 *)data;
--              *(tFloat32 *)buffer = v;
-+              memcpy(buffer, data, sizeof(tFloat32));
-             }
- 
-             return sizeof( tFloat32 );
- 
-        case eMtFloat64:
-             {
--              tFloat64 v = *(const tFloat64 *)data;
--              *(tFloat64 *)buffer = v;
-+              memcpy(buffer, data, sizeof(tFloat64));
-             }
- 
-             return sizeof( tFloat64 );
-@@ -347,16 +343,16 @@
+--- openhpi-2.10.1/marshal/marshal.c.orig	2007-11-03 06:47:32.000000000 +0100
++++ openhpi-2.10.1/marshal/marshal.c	2007-11-03 22:54:30.116125607 +0100
+@@ -342,16 +342,16 @@
  
         case eMtUint16:
         case eMtInt16:
@@ -79,7 +23,7 @@
  	    break;
  
         default:
-@@ -395,16 +391,16 @@
+@@ -390,16 +390,16 @@
  
         case eMtUint16:
         case eMtInt16:
@@ -102,89 +46,48 @@
  	    break;
  
         default:
-@@ -612,12 +608,13 @@
-        case eMtInt16:
-        case eMtUint16:
-             {
--              tUint16 v = *(const tUint16 *)buffer;
-+              tUint16 v;
-+              memcpy(&v, buffer, sizeof(tUint16));
- 
+@@ -612,7 +612,7 @@
                if ( MarshalByteOrder() != byte_order )
                     v = bswap_16( v );
                
 -              *(tUint16 *)data = v;
-+              memcpy(data, &v, sizeof(tUint16));
++              memcpy( data, &v, sizeof( tUint16 ) );
              }            
  
              return sizeof( tUint16 );
-@@ -625,12 +622,13 @@
-        case eMtUint32:
-        case eMtInt32:
-             {
--              tUint32 v = *(const tUint32 *)buffer;
-+              tUint32 v;
-+              memcpy(&v, buffer, sizeof(tUint32));
- 
+@@ -626,7 +626,7 @@
                if ( MarshalByteOrder() != byte_order )
                     v = bswap_32( v );
  
 -              *(tUint32 *)data = v;
-+              memcpy(data, &v, sizeof(tUint32));
++              memcpy( data, &v, sizeof( tUint32 ) );
              }
  
              return sizeof( tUint32 );
-@@ -638,12 +636,13 @@
-        case eMtUint64:
-        case eMtInt64:
-             {
--              tUint64 v = *(const tUint64 *)buffer;
-+              tUint64 v;
-+              memcpy(&v, buffer, sizeof(tUint64));
- 
+@@ -640,7 +640,7 @@
                if ( MarshalByteOrder() != byte_order )
                     v = bswap_64( v );
  
 -              *(tUint64 *)data = v;
-+              memcpy(data, &v, sizeof(tUint64));
++              memcpy( data, &v, sizeof( tUint64 ) );
              }
  
              return sizeof( tUint64 );
-@@ -651,13 +650,16 @@
-        case eMtFloat32:
-             {
-               // this has been tested for i386 and PPC
-+              tFloat32 v2;
-               tFloat32Uint32 v;
--              v.m_f32 = *(const tFloat32 *)buffer;
-+              memcpy(&v2, buffer, sizeof(tFloat32));
-+              v.m_f32 = v2;
- 
+@@ -654,7 +654,7 @@
                if ( MarshalByteOrder() != byte_order )
                     v.m_u32 = bswap_32( v.m_u32 );
  
 -              *(tFloat32 *)data = v.m_f32;
-+              v2 = v.m_f32;
-+              memcpy(data, &v2, sizeof(tFloat32));
++              memcpy(data, &(v.m_f32), sizeof( tFloat32 ) );
              }
  
              return sizeof( tFloat32 );
-@@ -665,13 +667,16 @@
-        case eMtFloat64:
-             {
-               // this has been tested for i386 and PPC
-+              tFloat64 v2;
-               tFloat64Uint64 v;
--              v.m_f64 = *(const tFloat64 *)buffer;
-+              memcpy(&v2, buffer, sizeof(tFloat64));
-+              v.m_f64 = v2;
- 
+@@ -668,7 +668,7 @@
                if ( MarshalByteOrder() != byte_order )
                     v.m_u64 = bswap_64( v.m_u64 );
  
 -              *(tFloat64 *)data = v.m_f64;
-+              v2 = v.m_f64;
-+              memcpy(data, &v2, sizeof(tFloat64));
++              memcpy( data, &(v.m_f64), sizeof( tFloat64 ) );
              }
  
              return sizeof( tFloat64 );
