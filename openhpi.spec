@@ -1,21 +1,19 @@
-# TODO:
-# - rtas (BR: librtas) on ppc/ppc64
-# - C++ wrappers (needs patching, at least "extra qualification" errors)
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.7.2
+Version:	2.10.1
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	0d980f24efde840412a68c987bd7d909
+# Source0-md5:	b8b771b310046bb14db8113fd1720431
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
 Patch3:		%{name}-proto.patch
-Patch4:		%{name}-sysfs2.patch
-Patch5:		%{name}-configure.patch
+Patch4:		%{name}-configure.patch
+Patch5:		%{name}-rtas.patch
+Patch6:		%{name}-c++.patch
 URL:		http://openhpi.sourceforge.net/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
@@ -26,6 +24,9 @@ BuildRequires:	fam-devel
 BuildRequires:	gcc >= 5:3.2.0
 BuildRequires:	glib2-devel >= 1:2.2.0
 BuildRequires:	libltdl-devel
+%ifarch ppc ppc64
+BuildRequires:	librtas-devel
+%endif
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
 BuildRequires:	libuuid-devel
@@ -61,6 +62,9 @@ Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	glib2-devel >= 1:2.2.0
 Requires:	libltdl-devel
+# for libosahpi
+Requires:	libstdc++-devel
+Requires:	libuuid-devel
 
 %description devel
 Development part of OpenHPI library.
@@ -105,17 +109,17 @@ ipmidirect plugin for OpenHPI.
 %description plugin-ipmidirect -l pl.UTF-8
 Wtyczka ipmidirect dla OpenHPI.
 
-%package plugin-snmp
-Summary:	SNMP plugins for OpenHPI
-Summary(pl.UTF-8):	Wtyczki SNMP dla OpenHPI
+%package plugin-rtas
+Summary:	RTAS plugin for OpenHPI
+Summary(pl.UTF-8):	Wtyczka RTAS dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
-%description plugin-snmp
-SNMP plugins for OpenHPI: snmp_bc.
+%description plugin-rtas
+RTAS plugin for OpenHPI.
 
-%description plugin-snmp -l pl.UTF-8
-Wtyczki SNMP dla OpenHPI: snmp_bc.
+%description plugin-rtas -l pl.UTF-8
+Wtyczka RTAS dla OpenHPI.
 
 %package plugin-simulator
 Summary:	simulator plugin for OpenHPI
@@ -128,6 +132,18 @@ simulator plugin for OpenHPI.
 
 %description plugin-simulator -l pl.UTF-8
 Wtyczka simulator dla OpenHPI.
+
+%package plugin-snmp
+Summary:	SNMP plugins for OpenHPI
+Summary(pl.UTF-8):	Wtyczki SNMP dla OpenHPI
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description plugin-snmp
+SNMP plugins for OpenHPI: snmp_bc.
+
+%description plugin-snmp -l pl.UTF-8
+Wtyczki SNMP dla OpenHPI: snmp_bc.
 
 %package plugin-sysfs
 Summary:	sysfs plugin for OpenHPI
@@ -149,6 +165,7 @@ Wtyczka sysfs dla OpenHPI.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 # speed up build, lower disk space usage
 for f in `find . -name Makefile.am | xargs grep -l 'AM_CFLAGS.* -g '`; do
@@ -162,8 +179,12 @@ done
 %{__autoheader}
 %{__automake}
 %configure \
+	--enable-cpp_wrappers \
 	--enable-daemon \
 	--enable-dummy \
+%ifarch ppc ppc64
+	--enable-rtas \
+%endif
 	--enable-simulator
 
 %{__make}
@@ -188,9 +209,16 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc COPYING README docs/hld/openhpi-manual
-%attr(755,root,root) %{_bindir}/*
+%attr(755,root,root) %{_bindir}/hpi*
 %attr(755,root,root) %{_sbindir}/openhpid
-%attr(755,root,root) %{_libdir}/lib*.so.*.*.*
+%attr(755,root,root) %{_libdir}/libohtcpconnx.so.*.*.*
+%attr(755,root,root) %{_libdir}/libohudpconnx.so.*.*.*
+%attr(755,root,root) %{_libdir}/libopenhpi*.so.*.*.*
+%attr(755,root,root) %{_libdir}/libosahpi.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libohtcpconnx.so.2
+%attr(755,root,root) %ghost %{_libdir}/libohudpconnx.so.2
+%attr(755,root,root) %ghost %{_libdir}/libopenhpi*.so.2
+%attr(755,root,root) %ghost %{_libdir}/libosahpi.so.2
 %dir %{_libdir}/%{name}
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
 %{_libdir}/%{name}/libwatchdog.la
@@ -199,17 +227,30 @@ rm -rf $RPM_BUILD_ROOT
 #%attr(754,root,root) /etc/rc.d/init.d/openhpid
 %dir %{_localstatedir}/lib/%{name}
 %{_mandir}/man7/openhpi.7*
+%{_mandir}/man8/openhpid.8*
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/lib*.so
-%{_libdir}/lib*.la
-%{_includedir}/%{name}
-%{_pkgconfigdir}/*.pc
+%attr(755,root,root) %{_libdir}/libohtcpconnx.so
+%attr(755,root,root) %{_libdir}/libohudpconnx.so
+%attr(755,root,root) %{_libdir}/libopenhpi*.so
+%attr(755,root,root) %{_libdir}/libosahpi.so
+%{_libdir}/libohtcpconnx.la
+%{_libdir}/libohudpconnx.la
+%{_libdir}/libopenhpi*.la
+%{_libdir}/libosahpi.la
+%dir %{_includedir}/openhpi
+%{_includedir}/openhpi/*.h
+%{_includedir}/openhpi/oSaHpi*.hpp
+%{_pkgconfigdir}/openhpi.pc
+%{_pkgconfigdir}/openhpiutils.pc
 
 %files static
 %defattr(644,root,root,755)
-%{_libdir}/lib*.a
+%{_libdir}/libohtcpconnx.a
+%{_libdir}/libohudpconnx.a
+%{_libdir}/libopenhpi*.a
+%{_libdir}/libosahpi.a
 
 %files plugin-ipmi
 %defattr(644,root,root,755)
@@ -220,6 +261,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/libipmidirect.so*
 %{_libdir}/%{name}/libipmidirect.la
+
+%ifarch ppc ppc64
+%files plugin-rtas
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/%{name}/librtas2hpi.so*
+%{_libdir}/%{name}/librtas2hpi.la
+%endif
 
 %files plugin-simulator
 %defattr(644,root,root,755)
