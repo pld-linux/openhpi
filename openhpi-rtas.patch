@@ -1,0 +1,15 @@
+--- openhpi-2.10.1/acinclude.m4.orig	2007-11-03 23:02:20.362923000 +0100
++++ openhpi-2.10.1/acinclude.m4	2007-11-03 23:54:07.760003912 +0100
+@@ -202,12 +202,8 @@
+             int main (void) { rtas_activate_firmware(); }
+         ],
+         [
+-	    if test -f "/usr/bin/lsvpd"; then
+ 		    have_rtas_lib=yes
+         	    AC_MSG_RESULT(yes)
+-	    else
+-		    AC_MSG_RESULT(no)
+-	    fi
+        ],
+        [AC_MSG_RESULT(no)]
+     )])
