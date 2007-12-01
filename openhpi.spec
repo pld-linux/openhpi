@@ -2,7 +2,7 @@ Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implemen
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
 Version:	2.10.1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
@@ -114,6 +114,7 @@ Summary:	RTAS plugin for OpenHPI
 Summary(pl.UTF-8):	Wtyczka RTAS dla OpenHPI
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	lsvpd
 
 %description plugin-rtas
 RTAS plugin for OpenHPI.
