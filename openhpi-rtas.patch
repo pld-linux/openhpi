@@ -13,3 +13,794 @@
         ],
         [AC_MSG_RESULT(no)]
      )])
+diff -Nur openhpi.orig/plugins/rtas/rtas_annunciator.h openhpi/plugins/rtas/rtas_annunciator.h
+--- openhpi.orig/plugins/rtas/rtas_annunciator.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_annunciator.h	2007-12-01 23:35:12.981687807 +0100
+@@ -0,0 +1,57 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++
++#ifndef RTAS_ANNUNCIATOR_H
++#define RTAS_ANNUNCIATOR_H
++ 
++#include <glib.h>
++#include <SaHpi.h> 
++ 
++SaErrorT rtas_get_next_announce(void *hnd,
++                                   SaHpiResourceIdT id,
++                                   SaHpiAnnunciatorNumT num,
++                                   SaHpiSeverityT sev,
++                                   SaHpiBoolT unack,
++                                   SaHpiAnnouncementT *a);
++SaErrorT rtas_get_announce(void *hnd,
++                              SaHpiResourceIdT id,
++                              SaHpiAnnunciatorNumT num,
++                              SaHpiEntryIdT aid,
++                              SaHpiAnnouncementT *a);
++SaErrorT rtas_ack_announce(void *hnd,
++                              SaHpiResourceIdT id,
++                              SaHpiAnnunciatorNumT num,
++                              SaHpiEntryIdT aid,
++                              SaHpiSeverityT sev);
++SaErrorT rtas_add_announce(void *hnd,
++                              SaHpiResourceIdT id,
++                              SaHpiAnnunciatorNumT num,
++                              SaHpiAnnouncementT *a);
++SaErrorT rtas_del_announce(void *hnd,
++                              SaHpiResourceIdT id,
++                              SaHpiAnnunciatorNumT num,
++                              SaHpiEntryIdT aid,
++                              SaHpiSeverityT sev);
++SaErrorT rtas_get_annunc_mode(void *hnd,
++                                 SaHpiResourceIdT id,
++                                 SaHpiAnnunciatorNumT num,
++                                 SaHpiAnnunciatorModeT *mode);
++SaErrorT rtas_set_annunc_mode(void *hnd,
++                                 SaHpiResourceIdT id,
++                                 SaHpiAnnunciatorNumT num,
++                                 SaHpiAnnunciatorModeT mode); 
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas_control.h openhpi/plugins/rtas/rtas_control.h
+--- openhpi.orig/plugins/rtas/rtas_control.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_control.h	2007-12-01 23:35:12.933685071 +0100
+@@ -0,0 +1,39 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++
++#ifndef RTAS_CONTROL_H
++#define RTAS_CONTROL_H
++ 
++#include <glib.h>
++#include <SaHpi.h>
++
++SaErrorT rtas_get_control_state(void *hnd,
++                                   SaHpiResourceIdT id,
++                                   SaHpiCtrlNumT num,
++                                   SaHpiCtrlModeT *mode,
++                                   SaHpiCtrlStateT *state);
++				   
++SaErrorT rtas_set_control_state(void *hnd,
++                                   SaHpiResourceIdT id,
++                                   SaHpiCtrlNumT num,
++                                   SaHpiCtrlModeT mode,
++                                   SaHpiCtrlStateT *state); 
++				   
++SaErrorT rtas_control_parm(void *hnd,
++                              SaHpiResourceIdT id,
++                              SaHpiParmActionT act);				   
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas_discover.h openhpi/plugins/rtas/rtas_discover.h
+--- openhpi.orig/plugins/rtas/rtas_discover.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_discover.h	2007-12-01 23:35:12.917684159 +0100
+@@ -0,0 +1,70 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++
++#ifndef RTAS_DISCOVER_H
++#define RTAS_DISCOVER_H
++
++#include <glib.h>
++#include <SaHpi.h>
++#include <oh_handler.h>
++#include <oh_utils.h>
++#include <oh_error.h>
++#include <oh_domain.h>
++#include <rtas_sensor.h>
++#include <librtas.h>
++
++#define LSVPD_CMD "/sbin/lsvpd"
++
++/* Enums */
++typedef enum rtasSensorTokenEnum {
++        RTAS_SECURITY_SENSOR = 1,
++        RTAS_RESERVED_SENSOR_2,
++        RTAS_THERMAL_SENSOR,
++        RTAS_RESERVED_SENSOR_4,
++        RTAS_RESERVED_SENSOR_5,
++        RTAS_RESERVED_SENSOR_6,
++        RTAS_RESERVED_SENSOR_7,
++        RTAS_RESERVED_SENSOR_8,
++        RTAS_POWER_STATE_SENSOR,
++        RTAS_RESERVED_SENSOR_10,
++        RTAS_RESERVED_SENSOR_11,
++        RTAS_SURVEILLANCE_SENSOR = 9000,
++        RTAS_FAN_SENSOR,
++        RTAS_VOLTAGE_SENSOR,
++        RTAS_CONNECTOR_SENSOR,
++        RTAS_POWER_SUPPLY_SENSOR,
++        RTAS_GIQ_SENSOR,
++        RTAS_SYSTEM_ATTENTION_SENSOR,
++        RTAS_IDENTIFY_INDICATOR_SENSOR,
++        RTAS_RESERVED_SENSOR_9008,
++        RTAS_COMPONENT_RESET_STATE_SENSOR,
++        RTAS_OEM_SPECIFIC_SENSOR_START,
++        RTAS_OEM_SPECIFIC_SENSOR_END = 9999
++} rtasSensorToken;
++
++/* Function Protos */
++SaErrorT rtas_discover_resources(void *hnd);
++
++SaErrorT rtas_discover_sensors(struct oh_handler_state *handle,
++                               struct oh_event *res_oh_event);
++
++SaErrorT rtas_discover_inventory(struct oh_handler_state *handle,
++                                 struct oh_event *res_oh_event);
++
++void populate_rtas_sensor_rec_info(int token, SaHpiSensorRecT *sensor_info);
++
++
++#endif /* RTAS_DISCOVER_H */
+diff -Nur openhpi.orig/plugins/rtas/rtas_event.h openhpi/plugins/rtas/rtas_event.h
+--- openhpi.orig/plugins/rtas/rtas_event.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_event.h	2007-12-01 23:35:12.973687351 +0100
+@@ -0,0 +1,27 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++ 
++#ifndef RTAS_EVENT_H
++#define RTAS_EVENT_H
++
++#include <glib.h>
++#include <oh_handler.h>
++#include <SaHpi.h>
++#include <oh_error.h>
++ 
++SaErrorT rtas_get_event(void *hnd);
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas_eventlog.h openhpi/plugins/rtas/rtas_eventlog.h
+--- openhpi.orig/plugins/rtas/rtas_eventlog.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_eventlog.h	2007-12-01 23:35:13.021690086 +0100
+@@ -0,0 +1,73 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++ 
++#ifndef RTAS_EVENTLOG_H
++#define RTAS_EVENTLOG_H
++
++#include <glib.h>
++#include <SaHpi.h>
++ 
++SaErrorT rtas_get_el_info(void *hnd,
++                             SaHpiResourceIdT id,
++                             SaHpiEventLogInfoT *info);
++			     
++SaErrorT rtas_set_el_time(void *hnd,
++                             SaHpiResourceIdT id,
++                             SaHpiTimeT time);
++			     
++SaErrorT rtas_add_el_entry(void *hnd,
++                              SaHpiResourceIdT id,
++                              const SaHpiEventT *Event);
++			      
++SaErrorT rtas_get_el_entry(void *hnd,
++                              SaHpiResourceIdT id,
++                              SaHpiEventLogEntryIdT current,
++                              SaHpiEventLogEntryIdT *prev,
++                              SaHpiEventLogEntryIdT *next,
++                              SaHpiEventLogEntryT *entry,
++                              SaHpiRdrT  *rdr,
++                              SaHpiRptEntryT  *rptentry);
++			      
++SaErrorT rtas_clear_el(void *hnd, SaHpiResourceIdT id);
++
++SaErrorT rtas_set_el_state(void *hnd,
++                              SaHpiResourceIdT id,
++                              SaHpiBoolT e);
++			      
++SaErrorT rtas_reset_el_overflow(void *hnd, SaHpiResourceIdT id); 
++
++SaErrorT rtas_get_sel_info (void *hnd, 
++                               SaHpiResourceIdT id, 
++			       SaHpiEventLogInfoT *evtlog);
++			       
++SaErrorT rtas_set_sel_time (void *hnd, 
++                             SaHpiResourceIdT id, 
++			     const SaHpiEventT *evt);
++			     
++SaErrorT rtas_add_sel_entry (void *hnd, 
++                                SaHpiResourceIdT id, 
++				const SaHpiEventT *evt);
++				
++SaErrorT rtas_get_sel_entry (void *hnd, 
++                                SaHpiResourceIdT id, 
++				SaHpiEventLogEntryIdT current,
++                                SaHpiEventLogEntryIdT *prev, 
++				SaHpiEventLogEntryIdT *next,
++                                SaHpiEventLogEntryT *entry, 
++				SaHpiRdrT *rdr, 
++				SaHpiRptEntryT  *rdtentry);
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas.h openhpi/plugins/rtas/rtas.h
+--- openhpi.orig/plugins/rtas/rtas.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas.h	2007-12-01 23:35:12.957686439 +0100
+@@ -0,0 +1,29 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ */
++
++#ifndef RTAS_H
++#define RTAS_H
++
++#include <glib.h>
++#include <SaHpi.h>
++#include <oh_handler.h>
++#include <oh_utils.h>
++#include <oh_error.h>
++
++void *rtas_open(GHashTable *handler_config, unsigned int hid, oh_evt_queue *eventq);
++
++void rtas_close(void *hnd);
++		
++#endif /* _OH_RTAS_H */
+diff -Nur openhpi.orig/plugins/rtas/rtas_hotswap.h openhpi/plugins/rtas/rtas_hotswap.h
+--- openhpi.orig/plugins/rtas/rtas_hotswap.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_hotswap.h	2007-12-01 23:35:13.041691226 +0100
+@@ -0,0 +1,35 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++ 
++#ifndef RTAS_HOTSWAP_H
++#define RTAS_HOTSWAP_H 
++
++#include <glib.h>
++#include <SaHpi.h>
++ 
++SaErrorT rtas_get_hotswap_state(void *hnd,
++                                   SaHpiResourceIdT id,
++                                   SaHpiHsStateT *state);
++				   
++SaErrorT rtas_set_hotswap_state(void *hnd,
++                                   SaHpiResourceIdT id,
++                                   SaHpiHsStateT state);
++				   
++SaErrorT rtas_request_hotswap_action(void *hnd,
++                                        SaHpiResourceIdT id,
++                                        SaHpiHsActionT act); 
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas_indicator.h openhpi/plugins/rtas/rtas_indicator.h
+--- openhpi.orig/plugins/rtas/rtas_indicator.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_indicator.h	2007-12-01 23:35:12.673670254 +0100
+@@ -0,0 +1,31 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++
++#ifndef RTAS_INDICATOR_H
++#define RTAS_INDICATOR_H
++
++#include <glib.h>
++#include <SaHpi.h>
++
++SaErrorT rtas_get_indicator_state(void *hnd,
++                                     SaHpiResourceIdT id,
++                                     SaHpiHsIndicatorStateT *state);
++				     
++SaErrorT rtas_set_indicator_state(void *hnd,
++                                     SaHpiResourceIdT id,
++                                     SaHpiHsIndicatorStateT state);
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas_inventory.h openhpi/plugins/rtas/rtas_inventory.h
+--- openhpi.orig/plugins/rtas/rtas_inventory.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_inventory.h	2007-12-01 23:35:13.109695101 +0100
+@@ -0,0 +1,85 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++
++#ifndef RTAS_INVENTORY_H
++#define RTAS_INVENTORY_H
++
++#include <glib.h>
++#include <SaHpi.h>
++
++struct oh_rtas_idr_area {
++        SaHpiIdrAreaHeaderT hpi_idr_area;
++        GSList *fields;
++};
++
++struct oh_rtas_idr {
++        SaHpiIdrInfoT hpi_idr;
++        GSList *areas;
++};
++
++SaHpiIdrFieldTypeT rtas_get_idr_field_type(char *type);
++SaHpiIdrAreaTypeT rtas_get_idr_area_type(char *type);
++
++SaErrorT rtas_get_idr_info(void *hnd,
++                           SaHpiResourceIdT rid,
++                           SaHpiIdrIdT idrid,
++                           SaHpiIdrInfoT *idrinfo);
++
++SaErrorT rtas_get_idr_area_header(void *hnd,
++                                  SaHpiResourceIdT rid,
++                                  SaHpiIdrIdT idrid,
++                                  SaHpiIdrAreaTypeT areatype,
++                                  SaHpiEntryIdT areaid,
++                                  SaHpiEntryIdT *nextareaid,
++                                  SaHpiIdrAreaHeaderT *header);
++
++SaErrorT rtas_add_idr_area(void *hnd,
++                           SaHpiResourceIdT rid,
++                           SaHpiIdrIdT idrid,
++                           SaHpiIdrAreaTypeT areatype,
++                           SaHpiEntryIdT *areaid);
++
++SaErrorT rtas_del_idr_area(void *hnd,
++                           SaHpiResourceIdT rid,
++                           SaHpiIdrIdT idrid,
++                           SaHpiEntryIdT areaid);
++
++SaErrorT rtas_get_idr_field(void *hnd,
++                            SaHpiResourceIdT rid,
++                            SaHpiIdrIdT idrid,
++                            SaHpiEntryIdT areaid,
++                            SaHpiIdrFieldTypeT fieldtype,
++                            SaHpiEntryIdT fieldid,
++                            SaHpiEntryIdT *nextfieldid,
++                            SaHpiIdrFieldT *field);
++
++SaErrorT rtas_add_idr_field(void *hnd,
++                            SaHpiResourceIdT rid,
++                            SaHpiIdrIdT idrid,
++                            SaHpiIdrFieldT *field);
++
++SaErrorT rtas_set_idr_field(void *hnd,
++                            SaHpiResourceIdT rid,
++                            SaHpiIdrIdT idrid,
++                            SaHpiIdrFieldT *field);
++
++SaErrorT rtas_del_idr_field(void *hnd,
++                            SaHpiResourceIdT rid,
++                            SaHpiIdrIdT idrid,
++                            SaHpiEntryIdT areaid,
++                            SaHpiEntryIdT fieldid);
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas_power.h openhpi/plugins/rtas/rtas_power.h
+--- openhpi.orig/plugins/rtas/rtas_power.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_power.h	2007-12-01 23:35:13.105694873 +0100
+@@ -0,0 +1,32 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++
++
++#ifndef RTAS_POWER_H
++#define RTAS_POWER_H
++
++#include <glib.h>
++#include <SaHpi.h>
++ 
++SaErrorT rtas_get_power_state(void *hnd,
++                                 SaHpiResourceIdT id,
++                                 SaHpiPowerStateT *state);
++				 
++SaErrorT rtas_set_power_state(void *hnd,
++                                 SaHpiResourceIdT id,
++                                 SaHpiPowerStateT state); 
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas_reset.h openhpi/plugins/rtas/rtas_reset.h
+--- openhpi.orig/plugins/rtas/rtas_reset.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_reset.h	2007-12-01 23:35:12.993688490 +0100
+@@ -0,0 +1,31 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++
++#ifndef RTAS_RESET_H
++#define RTAS_RESET_H
++
++#include <glib.h>
++#include <SaHpi.h>
++ 
++SaErrorT rtas_get_reset_state(void *hnd,
++                                 SaHpiResourceIdT id,
++                                 SaHpiResetActionT *act);
++				 
++SaErrorT rtas_set_reset_state(void *hnd,
++                                 SaHpiResourceIdT id,
++                                 SaHpiResetActionT act); 
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas_resource.h openhpi/plugins/rtas/rtas_resource.h
+--- openhpi.orig/plugins/rtas/rtas_resource.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_resource.h	2007-12-01 23:35:13.061692366 +0100
+@@ -0,0 +1,31 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++
++#ifndef RTAS_RESOURCE_H
++#define RTAS_RESOURCE_H
++
++#include <glib.h>
++#include <SaHpi.h>
++
++SaErrorT rtas_set_resource_tag(void *hnd,
++                                  SaHpiResourceIdT id,
++                                  SaHpiTextBufferT *tag);
++				  
++SaErrorT rtas_set_resource_severity(void *hnd,
++                                       SaHpiResourceIdT id,
++                                       SaHpiSeverityT sev); 
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas_sensor.h openhpi/plugins/rtas/rtas_sensor.h
+--- openhpi.orig/plugins/rtas/rtas_sensor.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_sensor.h	2007-12-01 23:35:12.589665466 +0100
+@@ -0,0 +1,124 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++ 
++#ifndef RTAS_SENSOR_H
++#define RTAS_SENSOR_H
++
++#include <glib.h>
++#include <SaHpi.h>
++#include <oh_handler.h>
++#include <oh_utils.h>
++#include <oh_error.h>
++#include <oh_domain.h>
++#include <librtas.h>
++
++#define RTAS_SENSORS_PATH	"/proc/device-tree/rtas/rtas-sensors"
++#define RTAS_SENSOR_LOCATION    "/proc/device-tree/rtas/ibm,sensor-"
++#define MAX_SENSOR_LOCATION_STRING_SIZE 24
++
++#define MILLISECONDS_PER_MINUTE 1000
++#define TOKEN_MASK 0xFFFFFFF0
++#define TIME_MASK ~TOKEN_MASK
++
++
++typedef enum rtasSensorStateEnum {
++	SENSOR_OK            = 0,
++	SENSOR_CRITICAL_LOW  = 9,
++	SENSOR_WARNING_LOW   = 10,
++	SENSOR_NORMAL        = 11,
++	SENSOR_WARNING_HIGH  = 12,
++	SENSOR_CRITICAL_HIGH = 13
++}rtasSensorState;	
++	
++
++
++struct SensorInfo {
++	SaHpiUint32T	 token;
++	SaHpiUint32T	 index;
++	SaHpiBoolT       enabled;
++	SaHpiEventStateT current_state;
++	SaHpiUint32T     current_val;
++	char 		 sensor_location[MAX_SENSOR_LOCATION_STRING_SIZE];
++};
++
++
++
++/* Function Protos */
++SaErrorT rtas_get_sensor_reading(void *handler,
++				 SaHpiResourceIdT resourceid,
++				 SaHpiSensorNumT  sensornum,
++				 SaHpiSensorReadingT *reading,
++				 SaHpiEventStateT *e_state);
++				 
++SaErrorT rtas_get_sensor_thresholds(void *handler,
++				    SaHpiResourceIdT resourceid,
++				    SaHpiSensorNumT sensornum,
++				    SaHpiSensorThresholdsT *thresholds);	
++
++SaErrorT rtas_set_sensor_thresholds(void *handler,
++				       SaHpiResourceIdT resourceid,
++				       SaHpiSensorNumT sensornum,
++				       const SaHpiSensorThresholdsT *thresholds);
++				       
++				       
++SaErrorT rtas_get_sensor_enable(void *hnd,
++                                   SaHpiResourceIdT id,
++                                   SaHpiSensorNumT num,
++                                   SaHpiBoolT *enable);
++				   
++SaErrorT rtas_set_sensor_enable(void *hnd,
++                                   SaHpiResourceIdT id,
++                                   SaHpiSensorNumT num,
++                                   SaHpiBoolT enable);
++				   
++SaErrorT rtas_get_sensor_event_enables(void *hnd,
++                                          SaHpiResourceIdT id,
++                                          SaHpiSensorNumT num,
++                                          SaHpiBoolT *enables);
++					  
++SaErrorT rtas_set_sensor_event_enables(void *hnd,
++                                          SaHpiResourceIdT id,
++                                          SaHpiSensorNumT num,
++                                          const SaHpiBoolT enables);
++					  
++SaErrorT rtas_get_sensor_event_masks(void *hnd,
++                                        SaHpiResourceIdT id,
++                                        SaHpiSensorNumT  num,
++                                        SaHpiEventStateT *AssertEventMask,
++                                        SaHpiEventStateT *DeassertEventMask);
++					
++SaErrorT rtas_set_sensor_event_masks(void *hnd,
++                                        SaHpiResourceIdT id,
++                                        SaHpiSensorNumT num,
++                                        SaHpiSensorEventMaskActionT act,
++                                        SaHpiEventStateT AssertEventMask,
++                                        SaHpiEventStateT DeassertEventMask);	
++					
++SaErrorT rtas_get_sensor_event_enabled(void *hnd, 
++                                          SaHpiResourceIdT id,
++                                          SaHpiSensorNumT sensornum,
++                                          SaHpiBoolT *enable);
++					  
++SaErrorT rtas_set_sensor_event_enabled(void *hnd, 
++                                          SaHpiResourceIdT id,
++                                          SaHpiSensorNumT sensornum,
++                                          SaHpiBoolT *enable);									       
++				       			       
++
++int rtas_get_sensor_location_code(int token, int index, char *buffer);  
++
++
++#endif
+diff -Nur openhpi.orig/plugins/rtas/rtas_utils.h openhpi/plugins/rtas/rtas_utils.h
+--- openhpi.orig/plugins/rtas/rtas_utils.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_utils.h	2007-12-01 23:35:12.441657032 +0100
+@@ -0,0 +1,30 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++
++#ifndef RTAS_UTILS_H
++#define RTAS_UTILS_H
++
++#include <glib.h>
++#include <SaHpi.h>
++#include <oh_handler.h>
++#include <oh_utils.h>
++#include <oh_error.h>
++#include <oh_domain.h>
++#include <librtas.h>
++
++void decode_rtas_error (int error, char *buf, size_t size, int token, int index);
++
++#endif /* RTAS_UTILS_H */
+diff -Nur openhpi.orig/plugins/rtas/rtas_watchdog.h openhpi/plugins/rtas/rtas_watchdog.h
+--- openhpi.orig/plugins/rtas/rtas_watchdog.h	1970-01-01 01:00:00.000000000 +0100
++++ openhpi/plugins/rtas/rtas_watchdog.h	2007-12-01 23:35:12.465658400 +0100
+@@ -0,0 +1,37 @@
++/*      -*- linux-c -*-
++ *
++ * (C) Copyright IBM Corp. 2005
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  This
++ * file and program are licensed under a BSD style license.  See
++ * the Copying file included with the OpenHPI distribution for
++ * full licensing terms.
++ *
++ * Author(s):
++ *        Renier Morales <renier@openhpi.org>
++ *        Daniel de Araujo <ddearauj@us.ibm.com>
++ */
++
++#ifndef RTAS_WATCHDOG_H
++#define RTAS_WATCHDOG_H
++
++#include <glib.h>
++#include <SaHpi.h>
++ 
++SaErrorT rtas_get_watchdog_info(void *hnd,
++                                   SaHpiResourceIdT id,
++                                   SaHpiWatchdogNumT num,
++                                   SaHpiWatchdogT *wdt);
++				   
++SaErrorT rtas_set_watchdog_info(void *hnd,
++                                   SaHpiResourceIdT id,
++                                   SaHpiWatchdogNumT num,
++                                   SaHpiWatchdogT *wdt);
++				   
++SaErrorT rtas_reset_watchdog(void *hnd,
++                                SaHpiResourceIdT id,
++                                SaHpiWatchdogNumT num); 
++
++#endif
