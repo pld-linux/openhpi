@@ -1,0 +1,23 @@
+--- openhpi-0.7.0/plugins/ipmidirect/ipmi.cpp.orig	2004-02-04 03:15:11.000000000 +0000
++++ openhpi-0.7.0/plugins/ipmidirect/ipmi.cpp	2004-02-22 13:36:05.000000000 +0000
+@@ -908,7 +908,8 @@
+           }
+ 
+        memcpy( &lan_addr, ent->h_addr_list[0], ent->h_length );
+-       unsigned int a = *(unsigned int *)(void *)ent->h_addr_list[0];
++       unsigned int a;
++       memcpy(&a, ent->h_addr_list[0], sizeof(a));
+ 
+        IpmiLog( "Using host at %d.%d.%d.%d.\n",
+                 a & 0xff, (a >> 8 ) & 0xff, 
+--- openhpi-2.7.2/plugins/ipmidirect/ipmi_log.cpp.orig	2006-10-06 20:52:00.000000000 +0200
++++ openhpi-2.7.2/plugins/ipmidirect/ipmi_log.cpp	2006-12-03 22:17:58.265024394 +0100
+@@ -189,7 +189,7 @@
+ 
+ 	    char b[dDateTimeStringSize+5];
+             IpmiDateTimeToString( tv.tv_sec, b );
+-	    sprintf( b + dDateTimeStringSize - 1, ".%03ld ", tv.tv_usec / 1000 );
++	    sprintf( b + dDateTimeStringSize - 1, ".%03ld ", (long)(tv.tv_usec / 1000) );
+ 
+ 	    Output( b );
+ 	  }

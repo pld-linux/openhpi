@@ -1,0 +1,11 @@
+--- openhpi-2.7.2/configure.ac.orig	2007-03-25 00:45:46.000000000 +0000
++++ openhpi-2.7.2/configure.ac	2007-03-25 01:26:20.000000000 +0000
+@@ -475,7 +475,7 @@
+     else
+             CFLAGS=`echo $CFLAGS | sed -e 's/^-g\w*[ ]*\| -g\w*//g'`
+     fi],
+-    [CFLAGS=`echo $CFLAGS | sed -e 's/^-g\w*[ ]*\| -g\w*//g'`]
++    [AC_MSG_NOTICE([don't mess with my precious -gflags])]
+     )
+ 
+ dnl This will let the user decide whether he wants
