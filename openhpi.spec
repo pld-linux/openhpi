@@ -1,12 +1,12 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.10.1
-Release:	4
+Version:	2.10.2
+Release:	0.1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	b8b771b310046bb14db8113fd1720431
+# Source0-md5:	554dbb73b643fff8aa81fcf1f23ca339
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
@@ -14,7 +14,7 @@ Patch3:		%{name}-proto.patch
 Patch4:		%{name}-configure.patch
 Patch5:		%{name}-rtas.patch
 Patch6:		%{name}-c++.patch
-URL:		http://openhpi.sourceforge.net/
+URL:		http://www.openhpi.org/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
 BuildRequires:	automake >= 1:1.8
