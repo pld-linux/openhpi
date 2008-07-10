@@ -175,21 +175,6 @@ for f in $(find -name Makefile.am | xargs grep -l 'AM_CFLAGS.* -g '); do
 	%{__sed} -i -e 's/^\(AM_CFLAGS.* \)-g /\1 /' $f
 done
 
-%ifarch alpha sparc
-# event.c: In function `process_hpi_event':
-# event.c:236: warning: cast increases required alignment of target type
-# event.c: In function `oh_process_events':
-# event.c:410: warning: cast increases required alignment of target type
-# make[1]: *** [event.lo] Error 1
-# for this code:
-# sid = g_array_index(sessions, SaHpiSessionIdT, i);
-# where:
-# typedef SaHpiUint32T SaHpiSessionIdT;
-# and:
-# #define g_array_index(a,t,i)      (((t*) (a)->data) [(i)])
-%{__sed} -i -e 's/-Werror//' configure.ac
-%endif
-
 %build
 %{__libtoolize}
 %{__aclocal}
