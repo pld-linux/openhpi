@@ -1,20 +1,18 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.10.2
+Version:	2.12.0
 Release:	1
 License:	BSD
 Group:		Libraries
 Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	554dbb73b643fff8aa81fcf1f23ca339
+# Source0-md5:	56c4d444cad0c9d471acdbbec384b81c
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
 Patch3:		%{name}-proto.patch
-Patch4:		%{name}-configure.patch
-Patch5:		%{name}-rtas.patch
-Patch6:		%{name}-c++.patch
-Patch7:		%{name}-gcc43.patch
+Patch4:		%{name}-rtas.patch
+Patch5:		%{name}-c++.patch
 URL:		http://www.openhpi.org/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
@@ -31,6 +29,7 @@ BuildRequires:	librtas-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
 BuildRequires:	libuuid-devel
+BuildRequires:	libxml2-devel >= 2.0
 BuildRequires:	net-snmp-devel
 BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
@@ -167,13 +166,6 @@ Wtyczka sysfs dla OpenHPI.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch6 -p1
-%patch7 -p1
-
-# speed up build, lower disk space usage
-for f in $(find -name Makefile.am | xargs grep -l 'AM_CFLAGS.* -g '); do
-	%{__sed} -i -e 's/^\(AM_CFLAGS.* \)-g /\1 /' $f
-done
 
 %build
 %{__libtoolize}
@@ -215,14 +207,18 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/hpi*
 %attr(755,root,root) %{_sbindir}/openhpid
 %attr(755,root,root) %{_libdir}/libohtcpconnx.so.*.*.*
-%attr(755,root,root) %{_libdir}/libohudpconnx.so.*.*.*
-%attr(755,root,root) %{_libdir}/libopenhpi*.so.*.*.*
-%attr(755,root,root) %{_libdir}/libosahpi.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libohtcpconnx.so.2
+%attr(755,root,root) %{_libdir}/libohudpconnx.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libohudpconnx.so.2
+%attr(755,root,root) %{_libdir}/libopenhpi*.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libopenhpi*.so.2
+%attr(755,root,root) %{_libdir}/libosahpi.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libosahpi.so.2
 %dir %{_libdir}/%{name}
+%attr(755,root,root) %{_libdir}/%{name}/libilo2_ribcl.so*
+%{_libdir}/%{name}/libilo2_ribcl.la
+%attr(755,root,root) %{_libdir}/%{name}/liboa_soap.so*
+%{_libdir}/%{name}/liboa_soap.la
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
 %{_libdir}/%{name}/libwatchdog.la
 %dir %{_sysconfdir}/openhpi
