@@ -1,18 +1,20 @@
+# TODO: PLDify init script
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.12.0
-Release:	3
+Version:	2.14.1
+Release:	1
 License:	BSD
-Group:		Libraries
-Source0:	http://dl.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	56c4d444cad0c9d471acdbbec384b81c
+Group:		Applications/System
+Source0:	http://downloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
+# Source0-md5:	1533972a05f2ed61f3ae441ecd3df5a9
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-align.patch
 Patch3:		%{name}-proto.patch
 Patch4:		%{name}-rtas.patch
 Patch5:		%{name}-c++.patch
+Patch6:		%{name}-install.patch
 URL:		http://www.openhpi.org/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
@@ -34,7 +36,7 @@ BuildRequires:	net-snmp-devel
 BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
 BuildRequires:	sysfsutils-devel >= 1.3.0-3
-Requires:	glib2 >= 1:2.2.0
+Requires:	%{name}-libs = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		specflags	-fno-strict-aliasing
@@ -55,11 +57,24 @@ interfejs do tworzenia modeli systemów zasobów, zwykle dla serwerów
 w ramach i szafach, ale rozszerzalny dla innego rodzaju problemów,
 takich jak klastrowanie, wirtualizacja czy symulacja.
 
+%package libs
+Summary:	OpenHPI Toolkit libraries
+Summary(pl.UTF-8):	Biblioteki OpenHPI
+Group:		Libraries
+Requires:	glib2 >= 1:2.2.0
+Conflicts:	openhpi < 2.14.1
+
+%description libs
+OpenHPI Toolkit libraries.
+
+%description libs -l pl.UTF-8
+Biblioteki OpenHPI.
+
 %package devel
 Summary:	Development part of OpenHPI Toolkit library
 Summary(pl.UTF-8):	Programistyczna część biblioteki OpenHPI
 Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-libs = %{version}-%{release}
 Requires:	glib2-devel >= 1:2.2.0
 Requires:	libltdl-devel
 # for libosahpi
@@ -166,6 +181,7 @@ Wtyczka sysfs dla OpenHPI.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 %{__libtoolize}
@@ -176,15 +192,12 @@ Wtyczka sysfs dla OpenHPI.
 %configure \
 	--enable-cpp_wrappers \
 	--enable-daemon \
-	--enable-dummy \
 %ifarch ppc ppc64
 	--enable-rtas \
 %endif
 	--enable-simulator
 
 %{__make}
-
-%{__make} -C docs/hld openhpi-manual/book1.html
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -193,27 +206,19 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 # remove useless static plugins (but *.la are used by lt_dlopen)
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/*.a
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/%{name}/*.a
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post	libs -p /sbin/ldconfig
+%postun	libs -p /sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
-%doc COPYING README docs/hld/openhpi-manual
+%doc COPYING README README.daemon docs/hld/openhpi-manual
 %attr(755,root,root) %{_bindir}/hpi*
 %attr(755,root,root) %{_sbindir}/openhpid
-%attr(755,root,root) %{_libdir}/libohtcpconnx.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libohtcpconnx.so.2
-%attr(755,root,root) %{_libdir}/libohudpconnx.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libohudpconnx.so.2
-%attr(755,root,root) %{_libdir}/libopenhpi*.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libopenhpi*.so.2
-%attr(755,root,root) %{_libdir}/libosahpi.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libosahpi.so.2
 %dir %{_libdir}/%{name}
 %attr(755,root,root) %{_libdir}/%{name}/libilo2_ribcl.so*
 %{_libdir}/%{name}/libilo2_ribcl.la
@@ -223,10 +228,23 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/libwatchdog.la
 %dir %{_sysconfdir}/openhpi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/openhpi/openhpi.conf
-#%attr(754,root,root) /etc/rc.d/init.d/openhpid
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/openhpi/openhpiclient.conf
+%attr(754,root,root) /etc/rc.d/init.d/openhpid
 %dir %{_localstatedir}/lib/%{name}
+%{_mandir}/man1/hpi*.1*
 %{_mandir}/man7/openhpi.7*
 %{_mandir}/man8/openhpid.8*
+
+%files libs
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libohtcpconnx.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libohtcpconnx.so.2
+%attr(755,root,root) %{_libdir}/libohudpconnx.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libohudpconnx.so.2
+%attr(755,root,root) %{_libdir}/libopenhpi*.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libopenhpi*.so.2
+%attr(755,root,root) %{_libdir}/libosahpi.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libosahpi.so.2
 
 %files devel
 %defattr(644,root,root,755)

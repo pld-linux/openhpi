@@ -1,0 +1,15 @@
+--- openhpi-2.14.1/openhpid/Makefile.am.orig	2009-11-23 21:19:38.000000000 +0100
++++ openhpi-2.14.1/openhpid/Makefile.am	2011-01-15 11:00:55.598363293 +0100
+@@ -55,9 +55,10 @@
+                         $(top_builddir)/marshal/libopenhpimarshal.la \
+                         $(top_builddir)/utils/libopenhpiutils.la
+ 
++initddir=$(sysconfdir)/rc.d/init.d
+ install-data-local:
+-	$(mkinstalldirs) $(DESTDIR)$(sysconfdir)/init.d
+-	$(INSTALL) -m 0755 openhpid.sh $(DESTDIR)$(sysconfdir)/init.d/openhpid
++	$(mkinstalldirs) $(DESTDIR)$(initddir)
++	$(INSTALL) -m 0755 openhpid.sh $(DESTDIR)$(initddir)/openhpid
+ 
+ uninstall-local:
+ 	rm -f $(DESTDIR)$(sysconfdir)/init.d/openhpid
