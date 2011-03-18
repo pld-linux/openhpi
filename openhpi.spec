@@ -2,19 +2,18 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.14.1
+Version:	2.16.0
 Release:	1
 License:	BSD
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	1533972a05f2ed61f3ae441ecd3df5a9
+# Source0-md5:	86455e5a25dabd8ba0190ebf6efec8c2
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
-Patch2:		%{name}-align.patch
-Patch3:		%{name}-proto.patch
-Patch4:		%{name}-rtas.patch
-Patch5:		%{name}-c++.patch
-Patch6:		%{name}-install.patch
+Patch2:		%{name}-proto.patch
+Patch3:		%{name}-rtas.patch
+Patch4:		%{name}-c++.patch
+Patch5:		%{name}-install.patch
 URL:		http://www.openhpi.org/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
@@ -181,7 +180,6 @@ Wtyczka sysfs dla OpenHPI.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch6 -p1
 
 %build
 %{__libtoolize}
@@ -192,6 +190,7 @@ Wtyczka sysfs dla OpenHPI.
 %configure \
 	--enable-cpp_wrappers \
 	--enable-daemon \
+	--enable-ipmi \
 %ifarch ppc ppc64
 	--enable-rtas \
 %endif
@@ -218,8 +217,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc COPYING README README.daemon docs/hld/openhpi-manual
 %attr(755,root,root) %{_bindir}/hpi*
+%attr(755,root,root) %{_bindir}/ohdomainlist
+%attr(755,root,root) %{_bindir}/ohhandler
+%attr(755,root,root) %{_bindir}/ohparam
 %attr(755,root,root) %{_sbindir}/openhpid
 %dir %{_libdir}/%{name}
+%attr(755,root,root) %{_libdir}/%{name}/libdyn_simulator.so*
+%{_libdir}/%{name}/libdyn_simulator.la
 %attr(755,root,root) %{_libdir}/%{name}/libilo2_ribcl.so*
 %{_libdir}/%{name}/libilo2_ribcl.la
 %attr(755,root,root) %{_libdir}/%{name}/liboa_soap.so*
@@ -229,18 +233,18 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/openhpi
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/openhpi/openhpi.conf
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/openhpi/openhpiclient.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/openhpi/simulation.data
 %attr(754,root,root) /etc/rc.d/init.d/openhpid
 %dir %{_localstatedir}/lib/%{name}
 %{_mandir}/man1/hpi*.1*
+%{_mandir}/man1/ohdomainlist.1*
+%{_mandir}/man1/ohhandler.1*
+%{_mandir}/man1/ohparam.1*
 %{_mandir}/man7/openhpi.7*
 %{_mandir}/man8/openhpid.8*
 
 %files libs
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libohtcpconnx.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libohtcpconnx.so.2
-%attr(755,root,root) %{_libdir}/libohudpconnx.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libohudpconnx.so.2
 %attr(755,root,root) %{_libdir}/libopenhpi*.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libopenhpi*.so.2
 %attr(755,root,root) %{_libdir}/libosahpi.so.*.*.*
@@ -248,12 +252,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libohtcpconnx.so
-%attr(755,root,root) %{_libdir}/libohudpconnx.so
 %attr(755,root,root) %{_libdir}/libopenhpi*.so
 %attr(755,root,root) %{_libdir}/libosahpi.so
-%{_libdir}/libohtcpconnx.la
-%{_libdir}/libohudpconnx.la
 %{_libdir}/libopenhpi*.la
 %{_libdir}/libosahpi.la
 %dir %{_includedir}/openhpi
@@ -264,8 +264,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files static
 %defattr(644,root,root,755)
-%{_libdir}/libohtcpconnx.a
-%{_libdir}/libohudpconnx.a
 %{_libdir}/libopenhpi*.a
 %{_libdir}/libosahpi.a
 
