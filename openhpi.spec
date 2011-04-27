@@ -3,7 +3,7 @@ Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implemen
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
 Version:	2.16.0
-Release:	1
+Release:	2
 License:	BSD
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
@@ -20,7 +20,6 @@ BuildRequires:	autoconf >= 2.57
 BuildRequires:	automake >= 1:1.8
 BuildRequires:	docbook-dtd41-sgml
 BuildRequires:	docbook-utils
-BuildRequires:	fam-devel
 BuildRequires:	gcc >= 5:3.2.0
 BuildRequires:	glib2-devel >= 1:2.2.0
 BuildRequires:	libltdl-devel
@@ -34,11 +33,16 @@ BuildRequires:	libxml2-devel >= 2.0
 BuildRequires:	net-snmp-devel
 BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
+BuildRequires:	sqlite3-devel
 BuildRequires:	sysfsutils-devel >= 1.3.0-3
 Requires:	%{name}-libs = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		specflags	-fno-strict-aliasing
+
+# oh_evt_queue_push, oh_event_free symbols provided by openhpid executable
+%define skip_post_check_so libipmi.so.* libwatchdog.so.* libsysfs2hpi.so.* libsnmp_bc.so.* libipmidirect.so.* libdyn_simulator.so.* libsimulator.so.* libilo2_ribcl.so.* liboa_soap.so.*
+
 
 %description
 OpenHPI is an open source project created with the intent of providing
