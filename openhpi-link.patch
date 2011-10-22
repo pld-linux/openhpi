@@ -1,0 +1,10 @@
+--- openhpi-3.0.0/transport/Makefile.am.orig	2011-10-17 17:57:27.000000000 +0200
++++ openhpi-3.0.0/transport/Makefile.am	2011-10-22 08:12:25.323358056 +0200
+@@ -32,6 +32,7 @@
+ 	strmsock.h
+ 
+ libopenhpitransport_la_LDFLAGS= -version-info @HPI_LIB_VERSION@
++libopenhpitransport_la_LIBADD= $(GLIB_ONLY_LIBS)
+ 
+ clean-local:
+ 	rm -f *~ core core.*

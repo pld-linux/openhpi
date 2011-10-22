@@ -2,18 +2,19 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	2.16.0
-Release:	2
+Version:	3.0.0
+Release:	1
 License:	BSD
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	86455e5a25dabd8ba0190ebf6efec8c2
+# Source0-md5:	9089cb59b732ff00b3805a1809405b4b
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-proto.patch
 Patch3:		%{name}-rtas.patch
 Patch4:		%{name}-c++.patch
 Patch5:		%{name}-install.patch
+Patch6:		%{name}-link.patch
 URL:		http://www.openhpi.org/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
@@ -21,7 +22,7 @@ BuildRequires:	automake >= 1:1.8
 BuildRequires:	docbook-dtd41-sgml
 BuildRequires:	docbook-utils
 BuildRequires:	gcc >= 5:3.2.0
-BuildRequires:	glib2-devel >= 1:2.2.0
+BuildRequires:	glib2-devel >= 1:2.12
 BuildRequires:	libltdl-devel
 %ifarch ppc ppc64
 BuildRequires:	librtas-devel
@@ -64,7 +65,7 @@ takich jak klastrowanie, wirtualizacja czy symulacja.
 Summary:	OpenHPI Toolkit libraries
 Summary(pl.UTF-8):	Biblioteki OpenHPI
 Group:		Libraries
-Requires:	glib2 >= 1:2.2.0
+Requires:	glib2 >= 1:2.12
 Conflicts:	openhpi < 2.14.1
 
 %description libs
@@ -78,7 +79,7 @@ Summary:	Development part of OpenHPI Toolkit library
 Summary(pl.UTF-8):	Programistyczna część biblioteki OpenHPI
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	glib2-devel >= 1:2.2.0
+Requires:	glib2-devel >= 1:2.12
 Requires:	libltdl-devel
 # for libosahpi
 Requires:	libstdc++-devel
@@ -184,6 +185,7 @@ Wtyczka sysfs dla OpenHPI.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 %{__libtoolize}
@@ -219,7 +221,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc COPYING README README.daemon docs/hld/openhpi-manual
+%doc COPYING README README.daemon
 %attr(755,root,root) %{_bindir}/hpi*
 %attr(755,root,root) %{_bindir}/ohdomainlist
 %attr(755,root,root) %{_bindir}/ohhandler
@@ -250,9 +252,9 @@ rm -rf $RPM_BUILD_ROOT
 %files libs
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libopenhpi*.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libopenhpi*.so.2
+%attr(755,root,root) %ghost %{_libdir}/libopenhpi*.so.3
 %attr(755,root,root) %{_libdir}/libosahpi.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libosahpi.so.2
+%attr(755,root,root) %ghost %{_libdir}/libosahpi.so.3
 
 %files devel
 %defattr(644,root,root,755)
