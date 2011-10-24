@@ -15,6 +15,7 @@ Patch3:		%{name}-rtas.patch
 Patch4:		%{name}-c++.patch
 Patch5:		%{name}-install.patch
 Patch6:		%{name}-link.patch
+Patch7:		%{name}-config-echo.patch
 URL:		http://www.openhpi.org/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
@@ -186,6 +187,7 @@ Wtyczka sysfs dla OpenHPI.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 %build
 %{__libtoolize}
