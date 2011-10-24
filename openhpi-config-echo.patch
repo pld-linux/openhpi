@@ -1,0 +1,27 @@
+--- openhpi-3.0.0/acinclude.m4~	2011-10-24 15:21:30.000000000 +0200
++++ openhpi-3.0.0/acinclude.m4	2011-10-24 15:24:28.000000000 +0200
+@@ -75,15 +75,15 @@
+     
+         oldifs="$IFS"
+         IFS=' '
+-        OH_SIZEOF_UCHAR=`echo -e $OH_TYPE_SIZES | grep "^unsigned char" | awk '{print $[3]}'`
+-        OH_SIZEOF_USHORT=`echo -e $OH_TYPE_SIZES | grep "^unsigned short" | awk '{print $[3]}'`
+-        OH_SIZEOF_UINT=`echo -e $OH_TYPE_SIZES | grep "^unsigned int" | awk '{print $[3]}'`
+-        OH_SIZEOF_CHAR=`echo -e $OH_TYPE_SIZES | grep "^char" | awk '{print $[2]}'`
+-        OH_SIZEOF_SHORT=`echo -e $OH_TYPE_SIZES | grep "^short" | awk '{print $[2]}'`
+-        OH_SIZEOF_INT=`echo -e $OH_TYPE_SIZES | grep "^int" | awk '{print $[2]}'`
+-        OH_SIZEOF_LLONG=`echo -e $OH_TYPE_SIZES | grep "^long long" | awk '{print $[3]}'`
+-        OH_SIZEOF_FLOAT=`echo -e $OH_TYPE_SIZES | grep "^float" | awk '{print $[2]}'`
+-        OH_SIZEOF_DOUBLE=`echo -e $OH_TYPE_SIZES | grep "^double" | awk '{print $[2]}'`
++        OH_SIZEOF_UCHAR=`/bin/echo -e "$OH_TYPE_SIZES" | grep "^unsigned char" | awk '{print $[3]}'`
++        OH_SIZEOF_USHORT=`/bin/echo -e "$OH_TYPE_SIZES" | grep "^unsigned short" | awk '{print $[3]}'`
++        OH_SIZEOF_UINT=`/bin/echo -e "$OH_TYPE_SIZES" | grep "^unsigned int" | awk '{print $[3]}'`
++        OH_SIZEOF_CHAR=`/bin/echo -e "$OH_TYPE_SIZES" | grep "^char" | awk '{print $[2]}'`
++        OH_SIZEOF_SHORT=`/bin/echo -e "$OH_TYPE_SIZES" | grep "^short" | awk '{print $[2]}'`
++        OH_SIZEOF_INT=`/bin/echo -e "$OH_TYPE_SIZES" | grep "^int" | awk '{print $[2]}'`
++        OH_SIZEOF_LLONG=`/bin/echo -e "$OH_TYPE_SIZES" | grep "^long long" | awk '{print $[3]}'`
++        OH_SIZEOF_FLOAT=`/bin/echo -e "$OH_TYPE_SIZES" | grep "^float" | awk '{print $[2]}'`
++        OH_SIZEOF_DOUBLE=`/bin/echo -e "$OH_TYPE_SIZES" | grep "^double" | awk '{print $[2]}'`
+         rm -f $OH_SSFILE $OH_SSSOURCE
+         IFS="$oldifs"
+ 
