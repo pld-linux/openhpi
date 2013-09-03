@@ -214,6 +214,8 @@ rm -rf $RPM_BUILD_ROOT
 
 # remove useless static plugins (but *.la are used by lt_dlopen)
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/%{name}/*.a
+# prepare for %doc
+%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
