@@ -2,12 +2,12 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	3.0.0
+Version:	3.2.1
 Release:	1
 License:	BSD
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	9089cb59b732ff00b3805a1809405b4b
+# Source0-md5:	115bd1c8f3443c6fa3bf893d73f37dca
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-proto.patch
@@ -34,6 +34,7 @@ BuildRequires:	libuuid-devel
 BuildRequires:	libxml2-devel >= 2.0
 BuildRequires:	net-snmp-devel
 BuildRequires:	openssl-devel
+BuildRequires:	perl-tools-pod
 BuildRequires:	pkgconfig
 BuildRequires:	sqlite3-devel
 BuildRequires:	sysfsutils-devel >= 1.3.0-3
@@ -42,9 +43,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		specflags	-fno-strict-aliasing
 
-# oh_evt_queue_push, oh_event_free symbols provided by openhpid executable
-%define skip_post_check_so libipmi.so.* libwatchdog.so.* libsysfs2hpi.so.* libsnmp_bc.so.* libipmidirect.so.* libdyn_simulator.so.* libsimulator.so.* libilo2_ribcl.so.* liboa_soap.so.*
-
+# oh_* symbols provided by openhpi
+%define		skip_post_check_so	.*%{_libdir}/openhpi/lib.*.so.*
 
 %description
 OpenHPI is an open source project created with the intent of providing
@@ -236,6 +236,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/libilo2_ribcl.la
 %attr(755,root,root) %{_libdir}/%{name}/liboa_soap.so*
 %{_libdir}/%{name}/liboa_soap.la
+%attr(755,root,root) %{_libdir}/%{name}/libslave.so*
+%{_libdir}/%{name}/libslave.la
+%attr(755,root,root) %{_libdir}/%{name}/libtest_agent.so*
+%{_libdir}/%{name}/libtest_agent.la
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
 %{_libdir}/%{name}/libwatchdog.la
 %dir %{_sysconfdir}/openhpi
