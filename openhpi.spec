@@ -3,7 +3,7 @@ Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implemen
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
 Version:	3.2.1
-Release:	1
+Release:	2
 License:	BSD
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
