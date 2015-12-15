@@ -2,12 +2,12 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	3.2.1
-Release:	2
+Version:	3.6.1
+Release:	1
 License:	BSD
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	115bd1c8f3443c6fa3bf893d73f37dca
+# Source0-md5:	4718b16e0f749b5ad214a9b04f45dd23
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-proto.patch
@@ -24,6 +24,7 @@ BuildRequires:	docbook-dtd41-sgml
 BuildRequires:	docbook-utils
 BuildRequires:	gcc >= 5:3.2.0
 BuildRequires:	glib2-devel >= 1:2.12
+BuildRequires:	libgcrypt-devel
 BuildRequires:	libltdl-devel
 %ifarch ppc ppc64
 BuildRequires:	librtas-devel
@@ -214,8 +215,8 @@ rm -rf $RPM_BUILD_ROOT
 
 # remove useless static plugins (but *.la are used by lt_dlopen)
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/%{name}/*.a
-# prepare for %doc
-%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
+# packaged as %doc
+%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
