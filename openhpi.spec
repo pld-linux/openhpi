@@ -2,12 +2,12 @@
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
-Version:	3.6.1
+Version:	3.8.0
 Release:	1
 License:	BSD
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
-# Source0-md5:	4718b16e0f749b5ad214a9b04f45dd23
+# Source0-md5:	fffda3deea8a0d3671a72eea9d13a4df
 Patch0:		%{name}-types.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-proto.patch
@@ -16,6 +16,7 @@ Patch4:		%{name}-c++.patch
 Patch5:		%{name}-install.patch
 Patch6:		%{name}-link.patch
 Patch7:		%{name}-config-echo.patch
+Patch8:		ipmi.patch
 URL:		http://www.openhpi.org/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
@@ -37,6 +38,7 @@ BuildRequires:	net-snmp-devel
 BuildRequires:	openssl-devel
 BuildRequires:	perl-tools-pod
 BuildRequires:	pkgconfig
+BuildRequires:	rabbitmq-c-devel
 BuildRequires:	sqlite3-devel
 BuildRequires:	sysfsutils-devel >= 1.3.0-3
 Requires:	%{name}-libs = %{version}-%{release}
@@ -189,6 +191,7 @@ Wtyczka sysfs dla OpenHPI.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 %build
 %{__libtoolize}
@@ -239,6 +242,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/libilo2_ribcl.la
 %attr(755,root,root) %{_libdir}/%{name}/liboa_soap.so*
 %{_libdir}/%{name}/liboa_soap.la
+%attr(755,root,root) %{_libdir}/%{name}/libov_rest.so*
+%{_libdir}/%{name}/libov_rest.la
 %attr(755,root,root) %{_libdir}/%{name}/libslave.so*
 %{_libdir}/%{name}/libslave.la
 %attr(755,root,root) %{_libdir}/%{name}/libtest_agent.so*

@@ -1,0 +1,15 @@
+The openipmi package made backward imcompatible changes.
+This patch fixes the effects in openhpi ipmi plugin
+by changing selector_t to struct selector_s
+
+--- a/plugins/ipmi/ipmi.h
++++ b/plugins/ipmi/ipmi.h
+@@ -82,7 +82,7 @@
+ 	ipmi_con_t *cons[2];
+ 	unsigned int num_cons;
+ 
+-	selector_t *ohoi_sel;
++	struct selector_s *ohoi_sel;
+ 
+ 	char *entity_root;
+ 	int connected;
