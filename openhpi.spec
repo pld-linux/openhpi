@@ -21,10 +21,12 @@ URL:		http://www.openhpi.org/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
 BuildRequires:	automake >= 1:1.8
+BuildRequires:	curl-devel
 BuildRequires:	docbook-dtd41-sgml
 BuildRequires:	docbook-utils
 BuildRequires:	gcc >= 5:3.2.0
 BuildRequires:	glib2-devel >= 1:2.12
+BuildRequires:	json-c-devel
 BuildRequires:	libgcrypt-devel
 BuildRequires:	libltdl-devel
 %ifarch ppc ppc64
@@ -132,6 +134,18 @@ ipmidirect plugin for OpenHPI.
 %description plugin-ipmidirect -l pl.UTF-8
 Wtyczka ipmidirect dla OpenHPI.
 
+%package plugin-ov_rest
+Summary:	OV REST plugin for OpenHPI
+Summary(pl.UTF-8):	Wtyczka OV REST dla OpenHPI
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description plugin-ov_rest
+OV REST plugin for OpenHPI.
+
+%description plugin-ov_rest -l pl.UTF-8
+Wtyczka OV REST dla OpenHPI.
+
 %package plugin-rtas
 Summary:	RTAS plugin for OpenHPI
 Summary(pl.UTF-8):	Wtyczka RTAS dla OpenHPI
@@ -236,16 +250,19 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/ohparam
 %attr(755,root,root) %{_sbindir}/openhpid
 %dir %{_libdir}/%{name}
+# R: libstdc++
 %attr(755,root,root) %{_libdir}/%{name}/libdyn_simulator.so*
 %{_libdir}/%{name}/libdyn_simulator.la
+# R: libxml2 openssl
 %attr(755,root,root) %{_libdir}/%{name}/libilo2_ribcl.so*
 %{_libdir}/%{name}/libilo2_ribcl.la
+# R: libxml2 openssl
 %attr(755,root,root) %{_libdir}/%{name}/liboa_soap.so*
 %{_libdir}/%{name}/liboa_soap.la
-%attr(755,root,root) %{_libdir}/%{name}/libov_rest.so*
-%{_libdir}/%{name}/libov_rest.la
+# R: glib2(gmodule)
 %attr(755,root,root) %{_libdir}/%{name}/libslave.so*
 %{_libdir}/%{name}/libslave.la
+# R: glib2(gmodule)
 %attr(755,root,root) %{_libdir}/%{name}/libtest_agent.so*
 %{_libdir}/%{name}/libtest_agent.la
 %attr(755,root,root) %{_libdir}/%{name}/libwatchdog.so*
@@ -289,17 +306,26 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-ipmi
 %defattr(644,root,root,755)
+# R: OpenIPMI ncurses
 %attr(755,root,root) %{_libdir}/%{name}/libipmi.so*
 %{_libdir}/%{name}/libipmi.la
 
 %files plugin-ipmidirect
 %defattr(644,root,root,755)
+# R: libstdc++ openssl(libcrypto)
 %attr(755,root,root) %{_libdir}/%{name}/libipmidirect.so*
 %{_libdir}/%{name}/libipmidirect.la
+
+%files plugin-ov_rest
+%defattr(644,root,root,755)
+# R: curl-libs json-c rabbitmq-c
+%attr(755,root,root) %{_libdir}/%{name}/libov_rest.so*
+%{_libdir}/%{name}/libov_rest.la
 
 %ifarch ppc ppc64
 %files plugin-rtas
 %defattr(644,root,root,755)
+# R: librtas
 %attr(755,root,root) %{_libdir}/%{name}/librtas2hpi.so*
 %{_libdir}/%{name}/librtas2hpi.la
 %endif
@@ -311,10 +337,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-snmp
 %defattr(644,root,root,755)
+# R: libuuid net-snmp
 %attr(755,root,root) %{_libdir}/%{name}/libsnmp_bc.so*
 %{_libdir}/%{name}/libsnmp_bc.la
 
 %files plugin-sysfs
 %defattr(644,root,root,755)
+# R: sysfsutils
 %attr(755,root,root) %{_libdir}/%{name}/libsysfs2hpi.so*
 %{_libdir}/%{name}/libsysfs2hpi.la
