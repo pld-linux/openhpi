@@ -1,0 +1,325 @@
+New makefile patch for 3.8.0
+
+--- a/baselib/Makefile.am
++++ b/baselib/Makefile.am
+@@ -40,7 +40,8 @@
+ libopenhpi_la_LDFLAGS = -version-info @HPI_LIB_VERSION@
+ libopenhpi_la_LIBADD  = $(top_builddir)/transport/libopenhpitransport.la -lstdc++ \
+                         $(top_builddir)/marshal/libopenhpimarshal.la \
+-                        $(top_builddir)/utils/libopenhpiutils.la
++                        $(top_builddir)/utils/libopenhpiutils.la \
++                        @SSL_LIB@ -lm -lpthread
+ 
+ clean-local:
+ 	rm -f *~ core core.* 
+--- a/baselibs/Makefile.am
++++ b/baselibs/Makefile.am
+@@ -28,6 +28,7 @@
+ # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #
+ 
++AUTOMAKE_OPTIONS = -Wno-portability
+ 
+ EXTRA_DIST  = $(srcdir)/README \
+ 			  $(srcdir)/csharp/Makefile \
+--- a/clients/hpixml/Makefile.am
++++ b/clients/hpixml/Makefile.am
+@@ -1,6 +1,8 @@
+ MAINTAINERCLEANFILES = Makefile.in
+ MOSTLYCLEANFILES     = @TEST_CLEAN@
+ 
++AUTOMAKE_OPTIONS = -Wno-portability subdir-objects
++
+ AM_CPPFLAGS = -DG_LOG_DOMAIN=\"hpixml\"
+ AM_CCASFLAGS = -DSCHEMA=\"$(srcdir)/schema.xsd\"
+ 
+--- a/configure.ac
++++ b/configure.ac
+@@ -8,6 +8,7 @@
+ AC_INIT(openhpi, 3.8.0)
+ AC_CONFIG_SRCDIR(openhpi.spec.in)
+ AM_INIT_AUTOMAKE([1.8])
++AC_CONFIG_MACRO_DIR([m4])
+ 
+ AM_CONFIG_HEADER(config.h)
+ AH_TOP([#ifndef __OPENHPI_CONFIG_H
+@@ -113,12 +114,15 @@
+ fi
+ 
+ exact_version=`pkg-config --modversion $GLIB`;
+-GLIB_CFLAGS=`pkg-config --cflags $GLIB $GTHREAD`
+-GLIB_LIBS=`pkg-config --libs $GLIB $GTHREAD`
++GLIB_CFLAGS=`pkg-config --cflags $GLIB`
++GLIB_LIBS=`pkg-config --libs $GLIB`
+ GLIB_ONLY_CFLAGS=`pkg-config --cflags $GLIB`
+ GLIB_ONLY_LIBS=`pkg-config --libs $GLIB`
+ GMODULE_ONLY_CFLAGS=`pkg-config --cflags $GMODULE`
+ GMODULE_ONLY_LIBS=`pkg-config --libs $GMODULE`
++GTHREAD_CFLAGS=`pkg-config --cflags $GTHREAD`
++GTHREAD_LIBS=`pkg-config --libs $GTHREAD`
++
+ 
+ # On some versions of Solaris the pkg-config file for gthread-2.0 contains a
+ # compiler option, '-mt', that is incompatible with gcc
+@@ -152,6 +156,8 @@
+ AC_SUBST(GLIB_ONLY_LIBS)
+ AC_SUBST(GMODULE_ONLY_CFLAGS)
+ AC_SUBST(GMODULE_ONLY_LIBS)
++AC_SUBST(GTHREAD_CFLAGS)
++AC_SUBST(GTHREAD_LIBS)
+ 
+ 
+ AC_CHECK_LIB([sysfs], [sysfs_get_mnt_path], [have_sysfs=yes])
+@@ -743,7 +749,8 @@
+ AC_SUBST(OPENHPI_INCLUDES)
+ 
+ dnl Set up libs that will be linked to
+-LIBS="$LIBS $SSL_LIB $GLIB_LIBS -lm -lpthread"
++dnl old LIBS="$LIBS $SSL_LIB $GLIB_LIBS -lm -lpthread" GTHREAD_LIBS
++LIBS="$LIBS $GLIB_LIBS"
+ 
+ AC_CHECK_PROG([found_pod2man], [pod2man], [yes])
+ AC_ARG_ENABLE([man],
+--- a/cpp/Makefile.am
++++ b/cpp/Makefile.am
+@@ -77,7 +77,7 @@
+ 
+ pkglib_LTLIBRARIES	= libosahpi.la
+ 
+-libosahpi_la_LIBADD	= -luuid
++#libosahpi_la_LIBADD	= -luuid
+ libosahpi_la_SOURCES	= oSaHpiAlarm.cpp oSaHpiAlarm.hpp \
+                           oSaHpiAnnouncement.cpp oSaHpiAnnouncement.hpp \
+                           oSaHpiAnnunciatorRec.cpp oSaHpiAnnunciatorRec.hpp \
+--- a/hpi_shell/Makefile.am
++++ b/hpi_shell/Makefile.am
+@@ -1,6 +1,8 @@
+ 
+ .NOTPARALLEL:
+ 
++AUTOMAKE_OPTIONS = -Wno-portability subdir-objects
++
+ MAINTAINERCLEANFILES 	= Makefile.in
+ MOSTLYCLEANFILES	= @TEST_CLEAN@
+ 
+@@ -14,8 +16,7 @@
+ 			   -I$(top_srcdir)/marshal \
+ 			   -I$(top_srcdir)/clients \
+ 			   -DCLIENT
+-COMMONLIBS		= $(top_builddir)/transport/libopenhpitransport.la \
+-			   $(top_builddir)/utils/libopenhpiutils.la \
++COMMONLIBS		= $(top_builddir)/utils/libopenhpiutils.la \
+ 			   $(top_builddir)/baselib/libopenhpi.la
+ 
+ bin_PROGRAMS		= hpi_shell
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -30,6 +30,8 @@
+ # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #
+ 
++ACLOCAL_AMFLAGS          = -I m4
++
+ #AUTOMAKE_OPTIONS        = 1.8
+ 
+ TARFILE                 = $(PACKAGE_NAME)-$(VERSION).tar.gz
+--- a/openhpid/Makefile.am
++++ b/openhpid/Makefile.am
+@@ -56,7 +56,7 @@
+     threaded.h
+ 
+ libopenhpidaemon_la_LIBADD         = $(top_builddir)/utils/libopenhpiutils.la \
+-                                     @GMODULE_ONLY_LIBS@
++                                     @GMODULE_ONLY_LIBS@ -lm -lpthread
+ 
+ if HAVE_OPENSSL
+ libopenhpidaemon_la_LIBADD += $(top_builddir)/$(SSLDIR)/libopenhpi_ssl.la
+--- a/plugins/dynamic_simulator/Makefile.am
++++ b/plugins/dynamic_simulator/Makefile.am
+@@ -127,7 +127,7 @@
+ 		thread.h \
+ 		thread.cpp
+ 
+-libdyn_simulator_la_LIBADD	= -lm -lstdc++ $(top_builddir)/utils/libopenhpiutils.la
++libdyn_simulator_la_LIBADD	= -lm -lpthread -lstdc++ $(top_builddir)/utils/libopenhpiutils.la
+ libdyn_simulator_la_LDFLAGS= -module -version-info @HPI_LIB_VERSION@
+ 
+ clean-local:
+--- a/plugins/ilo2_ribcl/Makefile.am
++++ b/plugins/ilo2_ribcl/Makefile.am
+@@ -66,6 +66,7 @@
+ 				ilo2_ribcl_hotswap.c \
+ 				ilo2_ribcl_hotswap.h
+ 
+-libilo2_ribcl_la_LIBADD   = @SSL_LIB@ @XML2_LIB@ $(top_builddir)/utils/libopenhpiutils.la
++libilo2_ribcl_la_LIBADD   = @XML2_LIB@ $(top_builddir)/utils/libopenhpiutils.la \
++                            $(top_builddir)/ssl/libopenhpi_ssl.la
+ libilo2_ribcl_la_LDFLAGS  = -module -version-info @HPI_LIB_VERSION@
+ 
+--- a/plugins/ipmi/Makefile.am
++++ b/plugins/ipmi/Makefile.am
+@@ -69,6 +69,6 @@
+ 			  atca_shelf_fru.c	\
+ 			  ipmi.h
+ 			  
+-libipmi_la_LIBADD	= $(top_builddir)/utils/libopenhpiutils.la -lncurses -lOpenIPMI -lOpenIPMIposix @OPENIPMI_LIBS@
++libipmi_la_LIBADD	= $(top_builddir)/utils/libopenhpiutils.la -lOpenIPMI -lOpenIPMIposix
+ #libipmi_la_LDFLAGS	= -module -version-info @HPI_LIB_VERSION@ -export-symbols $(srcdir)/ipmi.sym
+ libipmi_la_LDFLAGS	= -module -version-info @HPI_LIB_VERSION@ -export-dymanic $(srcdir)/ipmi.sym
+--- a/plugins/ipmidirect/Makefile.am
++++ b/plugins/ipmidirect/Makefile.am
+@@ -122,7 +122,7 @@
+ 		thread.h \
+ 		thread.cpp
+ 
+-libipmidirect_la_LIBADD	= @CRYPTO_LIB@ -lm -lstdc++ $(top_builddir)/utils/libopenhpiutils.la
++libipmidirect_la_LIBADD	= @CRYPTO_LIB@ -lm -lpthread -lstdc++ $(top_builddir)/utils/libopenhpiutils.la
+ libipmidirect_la_LDFLAGS= -module -version-info @HPI_LIB_VERSION@
+ 
+ clean-local:
+--- a/plugins/oa_soap/Makefile.am
++++ b/plugins/oa_soap/Makefile.am
+@@ -96,6 +96,7 @@
+                           oa_soap_callsupport.c
+ 
+ # TODO: What about -luuid in the ilo2_ribcl?
+-liboa_soap_la_LIBADD    = @SSL_LIB@ @XML2_LIB@ \
+-                          $(top_builddir)/utils/libopenhpiutils.la
++liboa_soap_la_LIBADD    = @XML2_LIB@ -lm -lpthread \
++                          $(top_builddir)/utils/libopenhpiutils.la \
++                          $(top_builddir)/ssl/libopenhpi_ssl.la
+ liboa_soap_la_LDFLAGS   = -module -version-info @HPI_LIB_VERSION@
+--- a/plugins/slave/Makefile.am
++++ b/plugins/slave/Makefile.am
+@@ -36,5 +36,6 @@
+                       util.h
+ 
+ libslave_la_LDFLAGS = -module -version-info @HPI_LIB_VERSION@
+-libslave_la_LIBADD  = @GMODULE_ONLY_LIBS@
++libslave_la_LIBADD  = @GMODULE_ONLY_LIBS@ -lm \
++                      $(top_builddir)/utils/libopenhpiutils.la
+ 
+--- a/plugins/snmp_bc/Makefile.am
++++ b/plugins/snmp_bc/Makefile.am
+@@ -83,7 +83,7 @@
+ 			snmp_bc_xml2event.c
+ nodist_libsnmp_bc_la_SOURCES = $(GENERATED_EVENT_CODE)
+ 
+-libsnmp_bc_la_LIBADD = -luuid @SNMPLIBS@ $(SNMPUTILBDIR)/libopenhpi_snmp.la $(top_builddir)/utils/libopenhpiutils.la
++libsnmp_bc_la_LIBADD = -luuid -lnetsnmp $(SNMPUTILBDIR)/libopenhpi_snmp.la $(top_builddir)/utils/libopenhpiutils.la
+ libsnmp_bc_la_LDFLAGS = -module -version-info @HPI_LIB_VERSION@
+ #libsnmp_bc_la_LDFLAGS = -module -avoid-version
+ 
+--- a/plugins/snmp_bc/t/Makefile.am
++++ b/plugins/snmp_bc/t/Makefile.am
+@@ -13,6 +13,8 @@
+ GENERATED_EVENT_CODE = el2event.c
+ GENERATED_CODE = $(GENERATED_EVENT_XML_MAP) $(GENERATED_EVENT_CODE)
+ 
++AUTOMAKE_OPTIONS = -Wno-portability
++
+ REMOTE_SIM_SOURCES = \
+ 		snmp_bc.c \
+ 		snmp_bc_annunciator.c \
+--- a/plugins/test_agent/Makefile.am
++++ b/plugins/test_agent/Makefile.am
+@@ -77,5 +77,5 @@
+                            watchdog.h
+ 
+ libtest_agent_la_LDFLAGS = -module -version-info @HPI_LIB_VERSION@
+-libtest_agent_la_LIBADD  = @GMODULE_ONLY_LIBS@
++libtest_agent_la_LIBADD  = -lm -lpthread $(top_builddir)/utils/libopenhpiutils.la
+ 
+--- a/plugins/watchdog/Makefile.am
++++ b/plugins/watchdog/Makefile.am
+@@ -38,5 +38,5 @@
+ pkglib_LTLIBRARIES	= libwatchdog.la
+ 
+ libwatchdog_la_SOURCES  = watchdog.c
+-libwatchdog_la_LIBADD   = $(top_builddir)/utils/libopenhpiutils.la
++libwatchdog_la_LIBADD   = $(top_builddir)/utils/libopenhpiutils.la -lpthread
+ libwatchdog_la_LDFLAGS  = -module -version-info @HPI_LIB_VERSION@
+--- a/scripts/test/Makefile.am
++++ b/scripts/test/Makefile.am
+@@ -29,6 +29,8 @@
+ # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #  
+ 
++AUTOMAKE_OPTIONS = -Wno-portability
++
+ REPORTDIR = report_html
+ CONFORMDIR = conform_html
+ SERVER = shell1.sf.net
+--- a/ssl/Makefile.am
++++ b/ssl/Makefile.am
+@@ -19,5 +19,6 @@
+ libopenhpi_ssl_la_SOURCES = oh_ssl.c oh_ssl.h
+ 
+ libopenhpi_ssl_la_LDFLAGS = -version-info @HPI_LIB_VERSION@
+-libopenhpi_ssl_la_LIBADD  = @CRYPTO_LIB@
++libopenhpi_ssl_la_LIBADD  = @CRYPTO_LIB@ $(top_builddir)/utils/libopenhpiutils.la \
++                            -lssl -lpthread -lm
+ 
+--- a/transport/Makefile.am
++++ b/transport/Makefile.am
+@@ -22,7 +22,7 @@
+ 
+ AM_CPPFLAGS 		+= @OPENHPI_INCLUDES@
+ # just to clear LIBS
+-LIBS			=
++# LIBS			=
+ 
+ # marshal and connection used by the daemon and client library
+ lib_LTLIBRARIES = libopenhpitransport.la
+@@ -32,6 +32,7 @@
+ 	strmsock.h
+ 
+ libopenhpitransport_la_LDFLAGS= -version-info @HPI_LIB_VERSION@
++# libopenhpitransport_la_LIBADD= @GTHREAD_LIBS@
+ 
+ clean-local:
+ 	rm -f *~ core core.*
+--- a/utils/Makefile.am
++++ b/utils/Makefile.am
+@@ -94,7 +94,7 @@
+     uid_utils.h
+ 
+ libopenhpiutils_la_LDFLAGS = -version-info @HPI_LIB_VERSION@
+-libopenhpiutils_la_LIBADD = @GCRYPT_LIB@
++libopenhpiutils_la_LIBADD = @GCRYPT_LIB@ @SSL_LIB@ -lm -lpthread
+ 
+ # FIXME:: Add when we can auto-generate files for SMP systems
+ #$(GENERATED_FILES): $(top_srcdir)/include/SaHpi.h $(top_srcdir)/scripts/SaHpi2code.pl
+--- a/utils/t/ann/Makefile.am
++++ b/utils/t/ann/Makefile.am
+@@ -8,6 +8,8 @@
+ # the Copying file included with the OpenHPI distribution for
+ # full licensing terms.
+ 
++AUTOMAKE_OPTIONS = -Wno-portability
++
+ MAINTAINERCLEANFILES = Makefile.in
+ 
+ REMOTE_SOURCES       = announcement_utils.c \
+--- a/utils/t/el/Makefile.am
++++ b/utils/t/el/Makefile.am
+@@ -10,6 +10,8 @@
+ 
+ MAINTAINERCLEANFILES = Makefile.in
+ 
++AUTOMAKE_OPTIONS = -Wno-portability
++
+ REMOTE_SOURCES       = announcement_utils.c \
+                        el_utils.c \
+                        epath_utils.c \
+--- a/utils/t/uid/Makefile.am
++++ b/utils/t/uid/Makefile.am
+@@ -10,6 +10,8 @@
+ 
+ MAINTAINERCLEANFILES = Makefile.in
+ 
++AUTOMAKE_OPTIONS = -Wno-portability
++
+ REMOTE_SOURCES		= uid_utils.c \
+ 			  epath_utils.c \
+ 			  sahpi_enum_utils.c \

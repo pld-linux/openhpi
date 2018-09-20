@@ -3,20 +3,21 @@ Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implemen
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
 Version:	3.8.0
-Release:	2
+Release:	3
 License:	BSD
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/openhpi/%{name}-%{version}.tar.gz
 # Source0-md5:	fffda3deea8a0d3671a72eea9d13a4df
-Patch0:		%{name}-types.patch
+Patch0:		makefile_3.8.0.patch
 Patch1:		%{name}-sh.patch
 Patch2:		%{name}-proto.patch
 Patch3:		%{name}-rtas.patch
 Patch4:		%{name}-c++.patch
 Patch5:		%{name}-install.patch
-Patch6:		%{name}-link.patch
+Patch6:		%{name}-types.patch
 Patch7:		%{name}-config-echo.patch
 Patch8:		ipmi.patch
+Patch9:		no-md2.patch
 URL:		http://www.openhpi.org/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
@@ -206,6 +207,7 @@ Wtyczka sysfs dla OpenHPI.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %build
 %{__libtoolize}
