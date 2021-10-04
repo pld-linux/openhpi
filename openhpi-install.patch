@@ -1,8 +1,9 @@
---- openhpi-2.14.1/openhpid/Makefile.am.orig	2009-11-23 21:19:38.000000000 +0100
-+++ openhpi-2.14.1/openhpid/Makefile.am	2011-01-15 11:00:55.598363293 +0100
-@@ -55,9 +55,10 @@
-                         $(top_builddir)/marshal/libopenhpimarshal.la \
-                         $(top_builddir)/utils/libopenhpiutils.la
+diff -urNp -x '*.orig' openhpi-3.8.0.org/openhpid/Makefile.am openhpi-3.8.0/openhpid/Makefile.am
+--- openhpi-3.8.0.org/openhpid/Makefile.am	2021-10-04 22:34:50.237088323 +0200
++++ openhpi-3.8.0/openhpid/Makefile.am	2021-10-04 22:34:50.380414060 +0200
+@@ -82,9 +82,10 @@ openhpid_LDADD          += -lstdc++
+ endif
+ 
  
 +initddir=$(sysconfdir)/rc.d/init.d
  install-data-local:

@@ -1,7 +1,8 @@
---- openhpi-2.10.1/acinclude.m4.orig	2007-11-03 23:02:20.362923000 +0100
-+++ openhpi-2.10.1/acinclude.m4	2007-11-03 23:54:07.760003912 +0100
-@@ -202,12 +202,8 @@
-             int main (void) { rtas_activate_firmware(); }
+diff -urNp -x '*.orig' openhpi-3.8.0.org/acinclude.m4 openhpi-3.8.0/acinclude.m4
+--- openhpi-3.8.0.org/acinclude.m4	2021-10-04 22:34:49.490461436 +0200
++++ openhpi-3.8.0/acinclude.m4	2021-10-04 22:34:49.630453960 +0200
+@@ -236,12 +236,8 @@ AC_DEFUN([OH_CHECK_RTAS],
+             rtas_activate_firmware();
          ],
          [
 -	    if test -f "/usr/bin/lsvpd"; then

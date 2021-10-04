@@ -1,6 +1,7 @@
---- openhpi-0.7.0/plugins/ipmidirect/ipmi.cpp.orig	2004-02-04 03:15:11.000000000 +0000
-+++ openhpi-0.7.0/plugins/ipmidirect/ipmi.cpp	2004-02-22 13:36:05.000000000 +0000
-@@ -908,7 +908,8 @@
+diff -urNp -x '*.orig' openhpi-3.8.0.org/plugins/ipmidirect/ipmi.cpp openhpi-3.8.0/plugins/ipmidirect/ipmi.cpp
+--- openhpi-3.8.0.org/plugins/ipmidirect/ipmi.cpp	2018-03-08 19:10:50.000000000 +0100
++++ openhpi-3.8.0/plugins/ipmidirect/ipmi.cpp	2021-10-04 22:34:50.760393922 +0200
+@@ -1950,7 +1950,8 @@ cIpmi::AllocConnection( GHashTable *hand
            }
  
         memcpy( &lan_addr, ent->h_addr_list[0], ent->h_length );
@@ -8,5 +9,5 @@
 +       unsigned int a;
 +       memcpy(&a, ent->h_addr_list[0], sizeof(a));
  
-        IpmiLog( "Using host at %d.%d.%d.%d.\n",
-                 a & 0xff, (a >> 8 ) & 0xff, 
+        stdlog << "Using host at "
+               << (int)(a & 0xff) << "."
