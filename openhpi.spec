@@ -18,6 +18,7 @@ Patch6:		%{name}-types.patch
 Patch7:		%{name}-config-echo.patch
 Patch8:		ipmi.patch
 Patch9:		no-md2.patch
+Patch10:	gcc14.patch
 URL:		http://www.openhpi.org/
 BuildRequires:	OpenIPMI-devel >= 1.4.20
 BuildRequires:	autoconf >= 2.57
@@ -198,16 +199,17 @@ Wtyczka sysfs dla OpenHPI.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
+%patch -P 0 -p1
+%patch -P 1 -p1
+%patch -P 2 -p1
+%patch -P 3 -p1
+%patch -P 4 -p1
+%patch -P 5 -p1
+%patch -P 6 -p1
+%patch -P 7 -p1
+%patch -P 8 -p1
+%patch -P 9 -p1
+%patch -P 10 -p1
 
 %build
 %{__libtoolize}
