@@ -1,4 +1,8 @@
 # TODO: PLDify init script
+#
+# Conditional build:
+%bcond_without	static_libs	# static libraries
+
 Summary:	Service Availability Forum's Hardware Platform Interface (HPI) implementation
 Summary(pl.UTF-8):	Implementacja HPI (Hardware Platform Interface) Service Availability Forum
 Name:		openhpi
@@ -43,6 +47,7 @@ BuildRequires:	openssl-devel
 BuildRequires:	perl-tools-pod
 BuildRequires:	pkgconfig
 BuildRequires:	rabbitmq-c-devel
+BuildRequires:	rpmbuild(macros) >= 1.527
 BuildRequires:	sqlite3-devel
 BuildRequires:	sysfsutils-devel >= 1.3.0-3
 Requires:	%{name}-libs = %{version}-%{release}
@@ -218,6 +223,7 @@ Wtyczka sysfs dla OpenHPI.
 %{__autoheader}
 %{__automake}
 %configure \
+	%{__enable_disable static_libs static} \
 	--enable-cpp_wrappers \
 	--enable-daemon \
 	--enable-ipmi \
@@ -235,7 +241,7 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 # remove useless static plugins (but *.la are used by lt_dlopen)
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/%{name}/*.a
+%{?with_static_libs:%{__rm} $RPM_BUILD_ROOT%{_libdir}/%{name}/*.a}
 # packaged as %doc
 %{__rm} -r $RPM_BUILD_ROOT%{_docdir}/%{name}
 
@@ -303,10 +309,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/openhpi.pc
 %{_pkgconfigdir}/openhpiutils.pc
 
+%if %{with static_libs}
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/libopenhpi*.a
 %{_libdir}/libosahpi.a
+%endif
 
 %files plugin-ipmi
 %defattr(644,root,root,755)
